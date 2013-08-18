@@ -76,7 +76,7 @@
         //  css.textContent += "." + classname + " {background-color: #FEE}\n";
         //}
 
-        if(/\bvs\b/i.test(title) && /\blive\b/.test(title)){
+        if(/\bvs\b/i.test(title) && /\blive\b/i.test(title)){
           css.textContent += "." + classname + " {background-color: #FCC}\n";
         }
         seen[classname] = true;
