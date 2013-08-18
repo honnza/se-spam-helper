@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @match         http://stackexchange.com/questions?tab=realtime
-// @version       1.3.1
+// @version       1.4
 // ==/UserScript==
 
 (function(){
@@ -30,6 +30,11 @@
   seen_ary.forEach(function(x){seen[x] = true});
   var hidden_today = {};
   var seen_today = {};
+  var menu;
+  var notification_granted;
+
+  menu_init();
+  notification_init();
   window.addEventListener("unload", onbeforeunload);
 
   function onmessage(e){
@@ -78,11 +83,81 @@
 
         if(/\bvs\b/i.test(title) && /\blive\b/i.test(title)){
           css.textContent += "." + classname + " {background-color: #FCC}\n";
+          notify("Highly suspicious message detected");
         }
         seen[classname] = true;
       }
     }
+
+    function notify(message){
+      var notification = new Notification(message, {
+        icon: "//cdn.sstatic.net/" + site + "/img/icon-48.png",
+        body: title + "\n" + body
+      })
+      notification.onclick = function(){
+        open(request.url);
+      };
+    };
   };
+
+  function menu_init(){
+    menu = document.createElement("ul");
+    menu.id = "spam-helper-menu";
+
+    var a = document.createElement("a");
+    a.href = "#";
+    a.id = "spam-helper-menu-a";
+    a.textContent = "spam helper";
+    a.onclick = function(){
+      if(menu.parentElement){
+        document.body.removeChild(menu);
+      }else{
+        document.body.appendChild(menu);
+        menu.style.top = a.offsetTop + a.offsetHeight + "px";
+        menu.style.left = a.offsetLeft + "px";
+      }
+    };
+
+    var top_li = document.createElement("li");
+ 
+    top_li.appendChild(a);
+
+    var top_ul = document.getElementById("top").firstElementChild;
+    top_ul.insertBefore(top_li, top_ul.firstChild);
+
+    css.textContent +=
+      "#spam-helper-menu      {display: block; position: absolute}" +
+      "#spam-helper-menu > li {display: block; width: 150px; color: white; " +
+      "   background:rgba(0, 0, 0, 0) url('//cdn.sstatic.net/stackexchange/img/bg-hatchlines.png') " +
+      "   repeat-x top left;}";
+  }
+
+  function notification_init(){
+    notification_granted = JSON.parse(localStorage.getItem("spam-helper-notification_granted")) || false;
+    var cb = document.createElement("input");
+    cb.type = "checkbox"
+    cb.checked = notification_granted;
+    cb.onchange = function(){
+      if(cb.checked){
+        Notification.requestPermission(function(permission){
+          notification_granted = (permission == "granted");
+          localStorage.setItem("spam-helper-notification_granted", notification_granted);
+        });
+      }else{
+        notification_granted = false;
+        localStorage.setItem("spam-helper-notification_granted", false);
+      }
+    };
+
+    var label = document.createElement("label");
+    label.textContent = "enable notifications";
+    label.insertBefore(cb, label.firstChild);
+    
+    var li = document.createElement("li");
+    li.appendChild(label);
+
+    menu.appendChild(li);
+  }
 
   function onbeforeunload(){
     console.log('unloading');
