@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @match         http://stackexchange.com/questions?tab=realtime
-// @version       1.4.4
+// @version       1.4.5
 // ==/UserScript==
 
 (function(){
@@ -60,7 +60,7 @@
         hider.title = "I'm out of spam flags for today here";
         hider.onclick = function(site_class){
           daily_css.textContent += "." + site_class + " {display: none}\n";
-          ooflag_sites[site] = true;
+          ooflag_sites[site_class] = true;
         }.bind(null, site_class);
         hider.className = "spam-helper-site-hider";
         hider.style.cursor = "pointer";
@@ -93,7 +93,7 @@
     }
 
     function notify(message){
-      if(!ooflag_sites[site]){
+      if(!ooflag_sites[site_class]){
         var notification = new Notification(message, {
           icon: "//cdn.sstatic.net/" + site + "/img/icon-48.png",
           body: title + "\n" + body
