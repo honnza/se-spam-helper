@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @match         http://stackexchange.com/questions?tab=realtime
-// @version       1.4.1
+// @version       1.4.2
 // ==/UserScript==
 
 (function(){
@@ -22,6 +22,7 @@
     var ms_in_day = 1000 * 60 * 60 * 24;
     daily_css.textContent = "";
     setTimeout(reset_daily_css, ms_in_day - Date.now() % ms_in_day);
+    ooflag_sites = {};
   })();
   var seen = {};
   var seen_ary = JSON.parse(localStorage.getItem("spam-helper-seen"))||[];
@@ -29,6 +30,7 @@
   seen_ary = JSON.parse(localStorage.getItem("spam-helper-seen_twice"))||[]; //upgrade from v1.2
   seen_ary.forEach(function(x){seen[x] = true});
   var hidden_today = {};
+  var ooflag_sites = {};
   var seen_today = {};
   var menu;
   var notification_granted;
@@ -58,6 +60,7 @@
         hider.title = "I'm out of spam flags for today here";
         hider.onclick = function(site_class){
           daily_css.textContent += "." + site_class + " {display: none}\n";
+          ooflag_sites[site] = true;
         }.bind(null, site_class);
         hider.className = "spam-helper-site-hider";
         hider.style.cursor = "pointer";
@@ -81,7 +84,7 @@
         //  css.textContent += "." + classname + " {background-color: #FEE}\n";
         //}
 
-        if(/\bvs\b/i.test(title) && /\blive\b/i.test(title)){
+        if( /\bvs\b/i.test(title) && /\blive\b/i.test(title)){
           css.textContent += "." + classname + " {background-color: #FCC}\n";
           notify("Highly suspicious message detected");
         }
@@ -90,13 +93,15 @@
     }
 
     function notify(message){
-      var notification = new Notification(message, {
-        icon: "//cdn.sstatic.net/" + site + "/img/icon-48.png",
-        body: title + "\n" + body
-      })
-      notification.onclick = function(){
-        open(response.url);
-      };
+      if(!ooflags_hidden[site]){
+        var notification = new Notification(message, {
+          icon: "//cdn.sstatic.net/" + site + "/img/icon-48.png",
+          body: title + "\n" + body
+        })
+        notification.onclick = function(){
+          open(response.url);
+        };
+      }
     };
   };
 
