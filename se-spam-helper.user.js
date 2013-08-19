@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @match         http://stackexchange.com/questions?tab=realtime
-// @version       1.4.7
+// @version       1.4.8
 // ==/UserScript==
 
 (function(){
@@ -46,8 +46,9 @@
     var body = response.bodySummary;
     var text = title + " " + body;
     var id = response.id;
-    var site_class = "realtime-" + site;
-    var classname = site_class + "-" + id;
+    var classname = "realtime-" + site + "-" + id;
+    var match = children[i].className.match(/(realtime-[-a-z]+)-\d+/);
+    var site_class = match[1];
     
     setTimeout(function(){
       var children = document.getElementById("mainArea").children;
@@ -85,7 +86,9 @@
         //  css.textContent += "." + classname + " {background-color: #FEE}\n";
         //}
 
-        if( /\bvs\b/i.test(title) && /\blive\b/i.test(title)){
+        if(  (/\bvs\b/i.test(title) || /\bwatch\b/i.test(title))
+          && /\blive\b/i.test(title))
+        {
           css.textContent += "." + classname + " {background-color: #FCC}\n";
           notify("Highly suspicious message detected");
         }
