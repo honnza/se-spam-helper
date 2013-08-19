@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @match         http://stackexchange.com/questions?tab=realtime
-// @version       1.4
+// @version       1.4.1
 // ==/UserScript==
 
 (function(){
@@ -95,7 +95,7 @@
         body: title + "\n" + body
       })
       notification.onclick = function(){
-        open(request.url);
+        open(response.url);
       };
     };
   };
@@ -113,7 +113,7 @@
         document.body.removeChild(menu);
       }else{
         document.body.appendChild(menu);
-        menu.style.top = a.offsetTop + a.offsetHeight + "px";
+        menu.style.top = a.offsetTop + 2 * a.offsetHeight + "px";
         menu.style.left = a.offsetLeft + "px";
       }
     };
