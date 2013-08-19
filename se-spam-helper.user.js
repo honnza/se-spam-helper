@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @match         http://stackexchange.com/questions?tab=realtime
-// @version       1.4.3
+// @version       1.4.4
 // ==/UserScript==
 
 (function(){
@@ -93,7 +93,7 @@
     }
 
     function notify(message){
-      if(!ooflags_sites[site]){
+      if(!ooflag_sites[site]){
         var notification = new Notification(message, {
           icon: "//cdn.sstatic.net/" + site + "/img/icon-48.png",
           body: title + "\n" + body
