@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @match         http://stackexchange.com/questions?tab=realtime
-// @version       1.4.5
+// @version       1.4.6
 // ==/UserScript==
 
 (function(){
@@ -47,6 +47,8 @@
     var text = title + " " + body;
     var id = response.id;
     var classname = "realtime-" + site + "-" + id;
+    var match = children[i].className.match(/(realtime-[-a-z]+)-\d+/);
+    var site_class = match[1];
     
     setTimeout(function(){
       var children = document.getElementById("mainArea").children;
