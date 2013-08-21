@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.5.2
+// @version       1.5.3
 // ==/UserScript==
 
 (function(){
@@ -34,6 +34,7 @@
   var seen_today = {};
   var menu;
   var notification_granted;
+  var imgPool = new ElementPool();
 
   menu_init();
   notification_init();
@@ -56,15 +57,18 @@
         var match = children[i].className.match(/(realtime-[-a-z]+)-\d+/);
         if(!match) break;
         var site_class = match[1];
-        var hider = document.createElement("img");
-        hider.src = "https://raw.github.com/honnza/se-spam-helper/master/no-flag.png";
-        hider.title = "I'm out of spam flags for today here";
+        var hider = imgPool.get(function(){
+          var hider = document.createElement("img");
+          hider.src = "https://raw.github.com/honnza/se-spam-helper/master/no-flag.png";
+          hider.title = "I'm out of spam flags for today here";
+          hider.className = "spam-helper-site-hider";
+          hider.style.cursor = "pointer";
+          return hider;
+        });
         hider.onclick = function(site_class){
           daily_css.textContent += "." + site_class + " {display: none}\n";
           ooflag_sites[site_class] = true;
         }.bind(null, site_class);
-        hider.className = "spam-helper-site-hider";
-        hider.style.cursor = "pointer";
 
         children[i].getElementsByClassName("hot-question-site-icon")[0].appendChild(hider);
         children[i].classList.add(site_class);
@@ -180,4 +184,23 @@
       console.log('pruned data');
     }
   };
+
+  function ElementPool(){
+    var queue = [];
+    return {
+      constructor: ElementPool,
+      get: function(func){
+        var r
+        for(var i = 0; i < queue.length; i++){
+          if(!document.contains(queue[i])){
+            r = queue.splice(i,1)[0];
+            break;
+          }
+        }
+        r = r || func();
+        queue.push(r);
+        return r;
+      }
+    }
+  }
 })()
