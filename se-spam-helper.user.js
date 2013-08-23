@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.5.3
+// @version       1.5.4
 // ==/UserScript==
 
 (function(){
@@ -90,6 +90,7 @@
             (/\[^a-z0-9]{6,}/.test(title))
           ) > 1
           || /\bwatch\b/i.test(title) && /\bfree\b/i.test(title) && /\bonline\b/i.test(title)
+          || /^[^a-z]*$/.test(title)
         ){
           css.textContent += "." + classname + " {background-color: #FCC}\n";
           notify("Highly suspicious message detected");
