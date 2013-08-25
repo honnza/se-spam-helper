@@ -3,13 +3,13 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.5.9
+// @version       1.5.10
 // ==/UserScript==
 
 (function(){
   var is = {
     mostlyUppercase : function(str){
-      return str.match(/[A-Z]/g).length > str.match(/[a-z]/g).length;
+      return (str.match(/[A-Z]/g)||[]).length > (str.match(/[a-z]/g)||[]).length;
     }
   }
 
