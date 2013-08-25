@@ -3,10 +3,16 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.5.8
+// @version       1.5.9
 // ==/UserScript==
 
 (function(){
+  var is = {
+    mostlyUppercase : function(str){
+      return str.match(/[A-Z]/g).length > str.match(/[a-z]/g).length;
+    }
+  }
+
   localStorage.removeItem("spam-helper-seen_twice");
  
   var ws, wsRefreshTimeout, wsTimeoutSet = Date.now();
@@ -97,7 +103,8 @@
         hidden_today[classname] = true;
       }else{
         if((
-             /\[^a-z0-9]{6,}|^[^a-z]*$/.test(title))
+             /\[^a-z0-9]{6,}$/.test(title))
+          || is.mostlyUppercase(title)
           || /\b(vs?|live|watch|free|online)\b/i.test(title)
         ){
           css.textContent += "." + classname + " {background-color: #FCC}\n";
