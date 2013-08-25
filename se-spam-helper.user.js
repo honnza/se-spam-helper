@@ -3,15 +3,28 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.5.7
+// @version       1.5.8
 // ==/UserScript==
 
 (function(){
   localStorage.removeItem("spam-helper-seen_twice");
-  
-  var ws = new WebSocket("ws://sockets.ny.stackexchange.com");
-  ws.onmessage = onmessage;
-  ws.onopen = function(){ws.send("155-questions-active")};
+ 
+  var ws, wsRefreshTimeout, wsTimeoutSet = Date.now();
+  (function wsRefresh(){
+    console.log("reopening websocket");
+    if(ws) ws.close(); // just in case
+    ws = new WebSocket("ws://sockets.ny.stackexchange.com");
+    ws.onmessage = function(){
+      clearTimeout(wsRefreshTimeout);
+      wsRefreshTimeout = setTimeout(wsRefresh, 60000);
+      console.log((Date.now() - wsTimeoutSet) + "ms since last message");
+      wsTimeoutSet = Date.now();
+      onmessage.apply(this, arguments);
+    }
+    ws.onerror = console.log.bind("websocket error");
+    ws.onopen = function(){ws.send("155-questions-active")};
+    wsRefreshTimeout = setTimeout(wsRefresh, 60000);
+  })();
 
   var css = document.createElement("style");
   document.head.appendChild(css);
@@ -84,13 +97,8 @@
         hidden_today[classname] = true;
       }else{
         if((
-            (/\bwatch\b/i.test(title)) +
-            (/\blive\b/i.test(title)) +
-            (/\[^a-z0-9]{6,}/.test(title))
-          ) > 1
-          || /\bvs?\b/i.test(title)
-          || /\bwatch\b/i.test(title) && /\bfree\b/i.test(title) && /\bonline\b/i.test(title)
-          || /^[^a-z]*$/.test(title)
+             /\[^a-z0-9]{6,}|^[^a-z]*$/.test(title))
+          || /\b(vs?|live|watch|free|online)\b/i.test(title)
         ){
           css.textContent += "." + classname + " {background-color: #FCC}\n";
           notify("Highly suspicious message detected");
