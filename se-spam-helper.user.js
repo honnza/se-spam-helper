@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.5.10
+// @version       1.5.11
 // ==/UserScript==
 
 (function(){
@@ -17,13 +17,11 @@
  
   var ws, wsRefreshTimeout, wsTimeoutSet = Date.now();
   (function wsRefresh(){
-    console.log("reopening websocket");
     if(ws) ws.close(); // just in case
     ws = new WebSocket("ws://sockets.ny.stackexchange.com");
     ws.onmessage = function(){
       clearTimeout(wsRefreshTimeout);
       wsRefreshTimeout = setTimeout(wsRefresh, 60000);
-      console.log((Date.now() - wsTimeoutSet) + "ms since last message");
       wsTimeoutSet = Date.now();
       onmessage.apply(this, arguments);
     }
@@ -105,7 +103,7 @@
         if((
              /\[^a-z0-9]{6,}$/.test(title))
           || is.mostlyUppercase(title)
-          || /\b(vs?|live|watch|free|online)\b/i.test(title)
+          || /\b(vs?|live|watch|free|online|nike)\b/i.test(title)
         ){
           css.textContent += "." + classname + " {background-color: #FCC}\n";
           notify("Highly suspicious message detected");
