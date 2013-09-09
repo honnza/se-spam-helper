@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.5.16
+// @version       1.5.17
 // ==/UserScript==
 
 (function(){
@@ -219,7 +219,7 @@
   }
 
   function getImageUrl(site){
-    exceptions: {
+    var exceptions = {
       "answers-onstartups":"onstartups"
     }
     site = exceptions[site] || site;
