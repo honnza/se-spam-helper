@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.5.14
+// @version       1.5.15
 // ==/UserScript==
 
 (function(){
@@ -101,7 +101,7 @@
         hidden_today[classname] = true;
       }else{
         if((
-             /\[^a-z0-9]{6,}/.test(title))
+             /\[^a-z0-9]{6,}/i.test(title))
           || is.mostlyUppercase(title)
           || /\b(vs?|live|watch|free|online|nike|training|dress|buy)\b/i.test(title)
         ){
@@ -115,7 +115,7 @@
     function notify(message){
       if(!ooflag_sites[site_class]){
         var notification = new Notification(message, {
-          icon: "//cdn.sstatic.net/" + site + "/img/icon-48.png",
+          icon: getImageUrl(site),
           body: title + "\n" + body
         })
         notification.onclick = function(){
@@ -216,5 +216,14 @@
         return r;
       }
     }
+  }
+
+  function getImageUrl(site){
+    exceptions: {
+      "answers-onstartups":"onstartups",
+    }
+    site = exceptions[site] || site;
+    site = site.replace(/^meta\.(.*)/, "$1meta");
+    return "//cdn.sstatic.net/" + site + "/img/icon-48.png"
   }
 })()
