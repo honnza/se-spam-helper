@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.6
+// @version       1.6.1
 // ==/UserScript==
 
 (function(){
@@ -100,7 +100,7 @@
           " {height: 1em; overflow: hidden; padding-top: 0; padding-bottom: 0}\n";
         hidden_today[classname] = true;
       }else{
-        if(/\b(asshole|fuck|shit)s?\b/.test(body){
+        if(/\b(asshole|fuck|shit)s?\b/.test(text)){
           css.textContent += "." + classname + " {background-color: #FBB}\n";
           notify("Potentially offensive message detected");
         }else if(/\[^a-z0-9]{6,}/i.test(title)
