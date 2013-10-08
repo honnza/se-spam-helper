@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.6.6
+// @version       1.7
 // ==/UserScript==
 
 (function(){
@@ -59,9 +59,9 @@
 
   function onmessage(e){
     var response = JSON.parse(JSON.parse(e.data).data);
-    var title = response.titleEncodedFancy;
+    var title = htmlUnescape(response.titleEncodedFancy);
     var site = getSiteFromApiParam(response.apiSiteParameter).replace(/\./,"-");
-    var body = response.bodySummary;
+    var body = htmlUnescape(response.bodySummary);
     var text = title + " " + body;
     var id = response.id;
     var site_class = "realtime-" + site;
@@ -233,5 +233,9 @@
     site = exceptions[site] || site;
     site = site.replace(/^meta\-(.*)/, "$1meta");
     return "//cdn.sstatic.net/" + site + "/img/icon-48.png";
+  }
+
+  function htmlUnescape(html){
+    return $("<div>").html(html).text();
   }
 })()
