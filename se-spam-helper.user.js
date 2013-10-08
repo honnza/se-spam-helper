@@ -100,7 +100,7 @@
           " {height: 1em; overflow: hidden; padding-top: 0; padding-bottom: 0}\n";
         hidden_today[classname] = true;
       }else{
-        if(/\b(asshole|fuck|shit)s?\b/.test(text)){
+        if(/\b(asshole|fag|fuck|shit|whore)s?\b/.test(text)){
           css.textContent += "." + classname + " {background-color: #FBB}\n";
           notify("Potentially offensive message detected");
         }else if(/\[^a-z]{6,}/i.test(title)
