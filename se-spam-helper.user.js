@@ -103,7 +103,7 @@
         if(/\b(asshole|fuck|shit)s?\b/.test(text)){
           css.textContent += "." + classname + " {background-color: #FBB}\n";
           notify("Potentially offensive message detected");
-        }else if(/\[^a-z0-9]{6,}/i.test(title)
+        }else if(/\[^a-z]{6,}/i.test(title)
           || is.mostlyUppercase(title) || /[a-z][A-Z]/.test(title)
           || /\b(vs?|live|watch|free|online|nike|training|dress|buy|here is|porn)\b/i.test(title)
         ){
