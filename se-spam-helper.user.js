@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.6.4
+// @version       1.6.5
 // ==/UserScript==
 
 (function(){
@@ -104,7 +104,7 @@
           css.textContent += "." + classname + " {background-color: #FBB}\n";
           notify("Potentially offensive message detected");
         }else if(/\[^a-z]{6,}/i.test(title)
-          || is.mostlyUppercase(title) || /[a-z][A-Z]/.test(title)
+          || is.mostlyUppercase(title)
           || /\b(vs?|live|watch|free|online|nike|training|dress|buy|here is|porn)\b/i.test(title)
         ){
           css.textContent += "." + classname + " {background-color: #FCC}\n";
