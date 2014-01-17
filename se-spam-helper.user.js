@@ -12,7 +12,7 @@
     if(ws) ws.close(); // just in case
     ws = new WebSocket("ws://sockets.ny.stackexchange.com");
     ws.onmessage = location.reload.bind(location);
-    ws.onerror = console.log.bind(console, "websocket error");
+    ws.onerror = console.log.bind(console, "websocket error: ");
     ws.onopen = function(){ws.send("155-questions-active")};
     wsRefreshTimeout = setTimeout(wsRefresh, 60000);
   })();
