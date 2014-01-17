@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.9
+// @version       1.9.1
 // ==/UserScript==
 
 (function(){
@@ -25,7 +25,7 @@
       wsTimeoutSet = Date.now();
       onmessage.apply(this, arguments);
     }
-    ws.onerror = console.log.bind("websocket error");
+    ws.onerror = console.log.bind(console, "websocket error");
     ws.onopen = function(){ws.send("155-questions-active")};
     wsRefreshTimeout = setTimeout(wsRefresh, 60000);
   })();
