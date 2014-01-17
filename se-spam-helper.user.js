@@ -17,6 +17,29 @@
     wsRefreshTimeout = setTimeout(wsRefresh, 60000);
   })();
 
+  var css = document.createElement("style");
+  document.head.appendChild(css);
+  var daily_css = document.createElement("style");
+  document.head.appendChild(daily_css);
+
+  (function reset_daily_css(){
+    var ms_in_day = 1000 * 60 * 60 * 24;
+    daily_css.textContent = "";
+    setTimeout(reset_daily_css, ms_in_day - Date.now() % ms_in_day);
+    ooflag_sites = {};
+  })();
+  var hidden_today = {};
+  var ooflag_sites = {};
+  var seen_today = {};
+  var menu;
+  var notification_granted;
+  var imgPool = new ElementPool();
+
+  menu_init();
+  notification_init();
+  window.addEventListener("unload", onbeforeunload);
+
+
 //
 
   function menu_init(){
