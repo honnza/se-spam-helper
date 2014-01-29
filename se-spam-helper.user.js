@@ -228,7 +228,8 @@
   }
   function getImageUrl(site){
     var exceptions = {
-      "answers-onstartups":"onstartups"
+      "answers-onstartups":"onstartups",
+      "pt-stackoverflow":"br"
     }
     site = exceptions[site] || site;
     site = site.replace(/^meta\-(.*)/, "$1meta");
