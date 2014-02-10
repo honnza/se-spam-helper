@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       1.11.1
+// @version       1.12
 // ==/UserScript==
 
 (function(){
@@ -229,7 +229,8 @@
   function getImageUrl(site){
     var exceptions = {
       "answers-onstartups":"onstartups",
-      "pt-stackoverflow":"br"
+      "pt-stackoverflow":"br",
+      "video":"avp"      
     }
     site = exceptions[site] || site;
     site = site.replace(/^meta\-(.*)/, "$1meta");
