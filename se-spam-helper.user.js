@@ -104,7 +104,7 @@
     var site_class = "realtime-" + siteToClass(question.apiSiteParameter);
     var classname = site_class + "-" + question.id;
     var q_body = htmlUnescape(question.bodySummary);
-    var a_body = $("<div/>", {html: answer.body});
+    var a_body = $("<div/>", {html: answer ? answer.body : "" });
     var text = answer ? a_body.text() : title + "\n" + q_body;
     var id = answer ? answer.answer_id : question.id;  
     if(!notifiedOf[site]) notifiedOf[site] = {};
@@ -166,7 +166,7 @@
   }
 
   function menu_init(){
-    menu = document.createElement("ul");
+    menu = document.createElement("div");
     menu.id = "spam-helper-menu";
 
     var a = document.createElement("a");
@@ -183,9 +183,14 @@
       }
     };
 
+	  var wrapper = document.getElementsByClassName('topbar-wrapper')[0]; 
+	  var links = document.getElementsByClassName('topbar-links')[0];
+	  wrapper.insertBefore(menu, links);
+	
     css.textContent +=
-      "#spam-helper-menu      {display: inline-block; padding-top:10px}" +
-      "#spam-helper-menu > li {display: block; width: 150px; color: white}";
+      "#spam-helper-menu      {display: inline-block; padding-top:7px}" +
+      "#spam-helper-menu > span {display: block; width: 150px; color: white}" +
+	    "#spam-helper-menu > span > input { vertical-align: -2px; }";
   }
 
   function notification_init(){
@@ -193,6 +198,7 @@
     var cb = document.createElement("input");
     cb.type = "checkbox";
     cb.checked = notification_granted;
+    cb.id = "spamhelpernotificationcb";
     cb.onchange = function(){
       if(cb.checked){
         Notification.requestPermission(function(permission){
@@ -207,12 +213,13 @@
 
     var label = document.createElement("label");
     label.textContent = "enable notifications";
-    label.insertBefore(cb, label.firstChild);
+	  label.htmlFor = "spamhelpernotificationcb";
     
-    var li = document.createElement("li");
-    li.appendChild(label);
-
-    menu.appendChild(li);
+    var span = document.createElement("span");
+	  span.appendChild(cb);
+    span.appendChild(label);
+	
+    menu.appendChild(span);
   }
 
 //
