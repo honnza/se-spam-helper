@@ -16,13 +16,14 @@
     }   
   };
   var QUEUE_TIMEOUT = 10 * 60 * 1000;
+  var WEBSOCKET_TIMEOUT = 11 * 60 * 1000;
 
   var ws, wsRefreshTimeout;
   var wsRefresh =  location.reload.bind(location);
   ws = new WebSocket("ws://sockets.ny.stackexchange.com");
   ws.onmessage = function(){
     clearTimeout(wsRefreshTimeout);
-    wsRefreshTimeout = setTimeout(wsRefresh, 60000);
+    wsRefreshTimeout = setTimeout(wsRefresh, WEBSOCKET_TIMEOUT);
     onMessage.apply(this, arguments);
   };
   ws.onerror = console.log.bind(console, "websocket error: ");
