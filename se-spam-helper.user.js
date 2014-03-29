@@ -90,6 +90,7 @@
   function flushQuestionQueue(queue){
     queue.length = 0;
     queue.questions = {};
+    clearTimeout(queue.timeout);
     queue.timeout = null;
     var ids = Object.keys(queue.questions);
     console.log("requesting answers for " + ids.length + " questions on " + queue.site);
