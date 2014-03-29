@@ -88,6 +88,7 @@
   var onQuestionQueueTimeout = flushQuestionQueue;
   function flushQuestionQueue(queue){
     var ids = Object.keys(queue.questions);
+    var questions = queue.questions;
     queue.length = 0;
     queue.questions = {};
     clearTimeout(queue.timeout);
@@ -96,7 +97,7 @@
     seApiCall("questions", ids.join(";"), "answers", {filter:"!Icp(Q.D5PTi18OQWD", site:queue.site})
     .then(function(answers){
       answers.forEach(function(answer){
-        checkAnswer(queue.questions[answer.question_id], answer);
+        checkAnswer(questions[answer.question_id], answer);
       });
     });
   }
