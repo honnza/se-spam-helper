@@ -87,11 +87,11 @@
   
   var onQuestionQueueTimeout = flushQuestionQueue;
   function flushQuestionQueue(queue){
+    var ids = Object.keys(queue.questions);
     queue.length = 0;
     queue.questions = {};
     clearTimeout(queue.timeout);
     queue.timeout = null;
-    var ids = Object.keys(queue.questions);
     console.log("requesting answers for " + ids.length + " questions on " + queue.site);
     seApiCall("questions", ids.join(";"), "answers", {filter:"!Icp(Q.D5PTi18OQWD", site:queue.site})
     .then(function(answers){
