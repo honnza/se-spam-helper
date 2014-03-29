@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.0.0.2
+// @version       2.1
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -183,18 +183,9 @@
       }
     };
 
-    var top_li = document.createElement("li");
- 
-    top_li.appendChild(a);
-
-    var top_ul = document.getElementById("top").firstElementChild;
-    top_ul.insertBefore(top_li, top_ul.firstChild);
-
     css.textContent +=
-      "#spam-helper-menu      {display: block; position: absolute}" +
-      "#spam-helper-menu > li {display: block; width: 150px; color: white; " +
-      "   background:rgba(0, 0, 0, 0) url('//cdn.sstatic.net/stackexchange/img/bg-hatchlines.png') " +
-      "   repeat-x top left;}";
+      "#spam-helper-menu      {display: inline-block; padding-top:10px}" +
+      "#spam-helper-menu > li {display: block; width: 150px; color: white}";
   }
 
   function notification_init(){
