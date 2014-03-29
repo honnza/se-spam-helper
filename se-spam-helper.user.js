@@ -10,7 +10,6 @@
 /* jshint loopfunc:true, jquery:true */
 
 (function(){
-  if(/^1\.7/.test($.fn.jquery)) $.Deferred.prototype.then = $.Deferred.prototype.pipe;
   var is = {
     mostlyUppercase : function(str){
       return (str.match(/[A-Z]/g)||[]).length > (str.match(/[a-z]/g)||[]).length;
@@ -296,7 +295,8 @@
     var mutex = {
       lock: $.Deferred().resolve(),
       enqueue: function(func){
-        mutex.lock = mutex.lock.then(func, func);
+        //change to `then` when SE upgrades to jQuery 1.8+
+        mutex.lock = mutex.lock.pipe(func, func);
       }                
     };
     return mutex;
