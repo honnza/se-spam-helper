@@ -10,14 +10,13 @@
 /* jshint loopfunc:true, jquery:true */
 
 (function(){
-  debugger;
   if(/^1\.7/.test($.fn.jquery)) $.Deferred.prototype.then = $.Deferred.prototype.pipe;
   var is = {
     mostlyUppercase : function(str){
       return (str.match(/[A-Z]/g)||[]).length > (str.match(/[a-z]/g)||[]).length;
     }   
   };
-  var QUEUE_TIMEOUT = 60 * 1000;
+  var QUEUE_TIMEOUT = 10 * 60 * 1000;
 
   var ws, wsRefreshTimeout;
   var wsRefresh =  location.reload.bind(location);
@@ -72,13 +71,15 @@
   function onQuestionActive(data){
     var site = data.apiSiteParameter;
     var id = data.id;
-    var queue = questionQueue[site] = questionQueue[site] || {site:site, questions:{}};
+    var queue = questionQueue[site] = questionQueue[site] || {site:site, questions:{}, length:0};
     if(queue.timeout) clearTimeout(queue.timeout);
     if(!queue.questions[id]) queue.length++;
     queue.questions[id] = data;
     if(queue.length >= 100){
+      console.log("queue for " + site + " is full");
       flushQuestionQueue(queue);
     }else{
+      console.log("queue for " + site + " has " + queue.length + " pending questions");
       queue.timeout = setTimeout(onQuestionQueueTimeout.bind(null, queue), QUEUE_TIMEOUT);
     }
     checkQuestion(data);
@@ -87,9 +88,12 @@
   
   var onQuestionQueueTimeout = flushQuestionQueue;
   function flushQuestionQueue(queue){
+    queue.length = 0;
+    queue.questions = {};
     queue.timeout = null;
-    var ids = Object.keys(queue.questions).join("/");
-    seApiCall("questions", ids, "answers", {filter:"!)dTxllc-oIEtawmy", site:queue.site})
+    var ids = Object.keys(queue.questions);
+    console.log("requesting answers for " + ids.length + " questions on " + queue.site);
+    seApiCall("questions", ids.join(";"), "answers", {filter:"!Icp(Q.D5PTi18OQWD", site:queue.site})
     .then(function(answers){
       answers.forEach(function(answer){
         checkAnswer(queue.questions[answer.question_id], answer);
@@ -104,7 +108,7 @@
     var site_class = "realtime-" + siteToClass(question.apiSiteParameter);
     var classname = site_class + "-" + question.id;
     var q_body = htmlUnescape(question.bodySummary);
-    var a_body = $("<div/>", {html: answer.body});
+    var a_body; if(answer) a_body = $("<div/>", {html: answer.body});
     var text = answer ? a_body.text() : title + "\n" + q_body;
     var id = answer ? answer.answer_id : question.id;  
     if(!notifiedOf[site]) notifiedOf[site] = {};
@@ -157,7 +161,7 @@
     if(!ooflagSites[site]){
       var notification = new Notification(title, {
         icon: classToImageUrl(siteToClass(site)),
-        body: title + "\n" + body
+        body: body
       });
       notification.onclick = function(){
         open(url);
@@ -238,7 +242,8 @@
   
   var apiQueue = new Mutex();
   function seApiCall(){
-    var options = [].pop.call(arguments);
+    var path = [].slice.call(arguments);
+    var options = path.pop();
     var responseDeferred = $.Deferred();
     var results = []; 
     (function getPage(page){ 
@@ -249,18 +254,20 @@
         console.log("fired request");
         GM_xmlhttpRequest({
           method: "GET",
-          url: "http://api.stackexchange.com/2.2/" + arguments.join('/') + "?" + $.param(options),
+          url: "http://api.stackexchange.com/2.2/" + path.join('/') + "?" + $.param(options),
           onload: function(response) {
-            console.log("got response, remaining quota: " + response.quota);
-            response = JSON.parse(response);
+            response = JSON.parse(response.responseText);
+            if(response.error_message) throw response.error_message;
+            console.log("got response, remaining quota: " + response.quota_remaining);
             [].push.apply(results, response.items);
             if(response.hasMore){
               console.log("need more pages");
               getPage(page + 1);
             }else{            
+              console.log("collected " + results.length + " results");
               responseDeferred.resolve(results);
             }
-            if(!response.quota){
+            if(!response.quota_remaining){
               alert ("I'm out of API quota!");
               setTimeout(function(){apiQueueDeferred.resolve();}, msUntilMidnight());
             }else if(response.backoff){
