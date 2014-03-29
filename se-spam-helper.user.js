@@ -3,13 +3,14 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.0,0,1
+// @version       2.0.0.2
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
 /* jshint loopfunc:true, jquery:true */
 
 (function(){
+  debugger;
   if(/^1\.7/.test($.fn.jquery)) $.Deferred.prototype.then = $.Deferred.prototype.pipe;
   var is = {
     mostlyUppercase : function(str){
@@ -66,6 +67,7 @@
         console.log("unknown response type: " + response.action + " in " + response);
     }
   }
+  
   var questionQueue = {};
   function onQuestionActive(data){
     var site = data.apiSiteParameter;
