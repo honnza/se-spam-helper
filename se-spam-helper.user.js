@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.0
+// @version       2.0,0,1
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -114,7 +114,7 @@
           is.mostlyUppercase(title) ||
           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn)\b/i.test(title)
         ) ||
-         answer && a_body.is(":has(a)");
+         answer && a_body.is(":has(a)")
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
         notify(site, title, (answer ? "A - " : "Q - ") +
