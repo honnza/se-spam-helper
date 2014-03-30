@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.1
+// @version       2.2
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -15,20 +15,21 @@
       return (str.match(/[A-Z]/g)||[]).length > (str.match(/[a-z]/g)||[]).length;
     }   
   };
-  var QUEUE_TIMEOUT = 10 * 60 * 1000;
-  var WEBSOCKET_TIMEOUT = 11 * 60 * 1000;
+  var QUEUE_TIMEOUT = 12 * 60 * 60 * 1000;
+  var WEBSOCKET_TIMEOUT = 6 * 60 * 1000;
 
   var ws, wsRefreshTimeout;
-  var wsRefresh =  location.reload.bind(location);
-  ws = new WebSocket("ws://sockets.ny.stackexchange.com");
-  ws.onmessage = function(){
-    clearTimeout(wsRefreshTimeout);
-    wsRefreshTimeout = setTimeout(wsRefresh, WEBSOCKET_TIMEOUT);
-    onMessage.apply(this, arguments);
-  };
-  ws.onerror = console.log.bind(console, "websocket error: ");
-  ws.onopen = function(){ws.send("155-questions-active");};
-  wsRefreshTimeout = setTimeout(wsRefresh, 60000);
+  (function wsRefresh(){
+    ws = new WebSocket("ws://sockets.ny.stackexchange.com");
+    ws.onmessage = function(){
+      clearTimeout(wsRefreshTimeout);
+      wsRefreshTimeout = setTimeout(wsRefresh, WEBSOCKET_TIMEOUT);
+      onMessage.apply(this, arguments);
+    };
+    ws.onerror = console.log.bind(console, "websocket error: ");
+    ws.onopen = function(){ws.send("155-questions-active");};
+    wsRefreshTimeout = setTimeout(wsRefresh, 60000);
+  })();
 
   var css = document.createElement("style");
   document.head.appendChild(css);
@@ -72,7 +73,6 @@
     var site = data.apiSiteParameter;
     var id = data.id;
     var queue = questionQueue[site] = questionQueue[site] || {site:site, questions:{}, length:0};
-    if(queue.timeout) clearTimeout(queue.timeout);
     if(!queue.questions[id]) queue.length++;
     queue.questions[id] = data;
     if(queue.length >= 100){
@@ -80,7 +80,9 @@
       flushQuestionQueue(queue);
     }else{
       console.log("queue for " + site + " has " + queue.length + " pending questions");
-      queue.timeout = setTimeout(onQuestionQueueTimeout.bind(null, queue), QUEUE_TIMEOUT);
+      if(!queue.timeout){
+        queue.timeout = setTimeout(onQuestionQueueTimeout.bind(null, queue), QUEUE_TIMEOUT);
+      }
     }
     checkQuestion(data);
     hiderInstall();
