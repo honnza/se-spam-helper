@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.2
+// @version       2.2.1
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -271,7 +271,7 @@
             if(response.error_message) throw response.error_message;
             console.log("got response, remaining quota: " + response.quota_remaining);
             [].push.apply(results, response.items);
-            if(response.hasMore){
+            if(response.has_more){
               console.log("need more pages");
               getPage(page + 1);
             }else{            
