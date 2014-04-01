@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.2.1
+// @version       2.2.2
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -118,11 +118,12 @@
     if(!notifiedOf[site]) notifiedOf[site] = {};
     if(!notifiedOf[site][id]){
       if(/\b(asshole|crap|damn|fag|fuck|idiot|shit|whore)s?\b/.test(text) ||
-         /(?:[^a-z ] *){9,}/i.test(title) ||
          is.mostlyUppercase(text) ||
+         /\w+@(\w+\.)+\w{2,}/.test(text.replace(/\s/,'')) ||
          !answer && (
-          is.mostlyUppercase(title) ||
-          /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn)\b/i.test(title)
+           /(?:[^a-z ] *){9,}/i.test(title) ||
+           is.mostlyUppercase(title) ||
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn)\b/i.test(title)
         ) ||
          answer && a_body.is(":has(a)")
       ){
@@ -266,6 +267,7 @@
         GM_xmlhttpRequest({
           method: "GET",
           url: "http://api.stackexchange.com/2.2/" + path.join('/') + "?" + $.param(options),
+          onerror: getPage.bind(null, page); // retry
           onload: function(response) {
             response = JSON.parse(response.responseText);
             if(response.error_message) throw response.error_message;
