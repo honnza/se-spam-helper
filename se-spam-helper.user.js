@@ -266,7 +266,11 @@
         GM_xmlhttpRequest({
           method: "GET",
           url: "http://api.stackexchange.com/2.2/" + path.join('/') + "?" + $.param(options),
-          onerror: getPage.bind(null, page); // retry
+          ontimeout: getPage.bind(null, page),
+          onerror: function(response) {
+            console.log(response);
+            getPage(page); // retry
+          },
           onload: function(response) {
             response = JSON.parse(response.responseText);
             if(response.error_message) throw response.error_message;
