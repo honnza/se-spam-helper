@@ -124,8 +124,7 @@
            /(?:[^a-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
            /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn)\b/i.test(title)
-        ) ||
-         answer && a_body.is(":has(a)")
+        )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
         notify(site, title, (answer ? "A - " : "Q - ") +
