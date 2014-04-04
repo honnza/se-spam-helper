@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.2.2
+// @version       2.2.3
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -123,7 +123,7 @@
          !answer && (
            /(?:[^a-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
-           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn)\b/i.test(title)
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers)\b/i.test(title)
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
@@ -319,7 +319,8 @@
   }
   function classToImageUrl(site){
     var exceptions = {
-      "answers-onstartups":"onstartups"
+      "answers-onstartups":"onstartups",
+      "pt-stackoverflow":"br",
     };
     site = exceptions[site] || site;
     site = site.replace(/^meta\-(.*)/, "$1meta");
