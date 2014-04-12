@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.2.3
+// @version       2.3
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -26,7 +26,10 @@
       wsRefreshTimeout = setTimeout(wsRefresh, WEBSOCKET_TIMEOUT);
       onMessage.apply(this, arguments);
     };
-    ws.onerror = console.log.bind(console, "websocket error: ");
+    ws.onerror = function(){
+      console.log.apply(console, ["console.error"].concat(arguments));
+      $(".contentWrapper").load(location.href + " " + ".contentWrapper", scrapePage);
+    }
     ws.onopen = function(){ws.send("155-questions-active");};
     wsRefreshTimeout = setTimeout(wsRefresh, 60000);
   })();
@@ -53,6 +56,7 @@
   menu_init();
   notification_init();
   window.addEventListener("unload", onbeforeunload);
+  scrapePage();
   
   function onMessage(e){
     var response = JSON.parse(e.data);
@@ -68,6 +72,19 @@
     }
   }
   
+  function scrapePage(){
+    $(".realtime-question").each(function(){
+      var qLink = $("a.realtime-title", this);
+      onQuestionActive({
+        apiSiteParameter: hostNameToSiteName(qLink.hostname)),
+        id: qLink.href.match(/\/questions\/(\d+)\//)[1],
+        titleEncodedFancy: $("h2", this).html(),
+        bodySummary: $("p.realtime-body-summary",this).replace(/\.{3}$/,"").html(),
+        url: qLink.href
+      });
+    });
+  }
+  
   var questionQueue = {};
   function onQuestionActive(data){
     var site = data.apiSiteParameter;
@@ -76,10 +93,8 @@
     if(!queue.questions[id]) queue.length++;
     queue.questions[id] = data;
     if(queue.length >= 100){
-      console.log("queue for " + site + " is full");
       flushQuestionQueue(queue);
     }else{
-      console.log("queue for " + site + " has " + queue.length + " pending questions");
       if(!queue.timeout){
         queue.timeout = setTimeout(onQuestionQueueTimeout.bind(null, queue), QUEUE_TIMEOUT);
       }
@@ -109,7 +124,7 @@
   function checkPost(question, answer){
     var title = htmlUnescape(question.titleEncodedFancy);
     var site = question.apiSiteParameter;
-    var site_class = "realtime-" + siteToClass(question.apiSiteParameter);
+    var site_class = "realtime-" + siteToClass(site);
     var classname = site_class + "-" + question.id;
     var q_body = htmlUnescape(question.bodySummary);
     var a_body; if(answer) a_body = $("<div/>", {html: answer.body});
@@ -325,6 +340,10 @@
     site = exceptions[site] || site;
     site = site.replace(/^meta\-(.*)/, "$1meta");
     return "//cdn.sstatic.net/" + site + "/img/icon-48.png";
+  }
+  
+  function hostNameToSiteName(host){
+    return host.split(".")[0];
   }
 
   function htmlUnescape(html){
