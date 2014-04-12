@@ -52,6 +52,10 @@
   
   var notifiedOf = {}, notifiedOfToday = {};
   var ooflagSites = {};
+  var questionQueue = {};
+
+  var onQuestionQueueTimeout = flushQuestionQueue;
+  var checkAnswer = checkPost, checkQuestion = checkPost;
 
   menu_init();
   notification_init();
@@ -73,19 +77,18 @@
   }
   
   function scrapePage(){
-    $(".realtime-question").each(function(){
-      var qLink = $("a.realtime-title", this);
+    $(".realtime-question:visible").each(function(){
+      var qLink = this.querySelector("a.realtime-question-url");
       onQuestionActive({
         apiSiteParameter: hostNameToSiteName(qLink.hostname),
         id: qLink.href.match(/\/questions\/(\d+)\//)[1],
         titleEncodedFancy: $("h2", this).html(),
-        bodySummary: $("p.realtime-body-summary",this).replace(/\.{3}$/,"").html(),
+        bodySummary: $("p.realtime-body-summary",this).html().replace(/\.{3}$/,""),
         url: qLink.href
       });
     });
   }
   
-  var questionQueue = {};
   function onQuestionActive(data){
     var site = data.apiSiteParameter;
     var id = data.id;
@@ -103,7 +106,6 @@
     hiderInstall();
   }
   
-  var onQuestionQueueTimeout = flushQuestionQueue;
   function flushQuestionQueue(queue){
     var ids = Object.keys(queue.questions);
     var questions = queue.questions;
@@ -120,7 +122,6 @@
     });
   }
   
-  var checkAnswer = checkPost, checkQuestion = checkPost;
   function checkPost(question, answer){
     var title = htmlUnescape(question.titleEncodedFancy);
     var site = question.apiSiteParameter;
