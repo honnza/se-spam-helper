@@ -28,7 +28,7 @@
     };
     ws.onerror = function(){
       console.log.apply(console, ["console.error"].concat(arguments));
-      $("#questionList").load(location.href + " #questionList", scrapePage);
+      $("#question-list").load(location.href + " #question-list", scrapePage);
     };
     ws.onopen = function(){ws.send("155-questions-active");};
     wsRefreshTimeout = setTimeout(wsRefresh, 60000);
