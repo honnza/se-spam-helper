@@ -29,7 +29,7 @@
     };
     ws.onerror = function(){
       console.log.apply(console, ["console.error"].concat(arguments));
-      $("#question-list").load(location.href + " #question-list", scrapePage);
+      $("#mainArea").load(location.href + " #mainArea", scrapePage);
     };
     ws.onopen = function(){ws.send("155-questions-active");};
   })();
