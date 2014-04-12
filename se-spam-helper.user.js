@@ -29,7 +29,7 @@
     ws.onerror = function(){
       console.log.apply(console, ["console.error"].concat(arguments));
       $(".contentWrapper").load(location.href + " " + ".contentWrapper", scrapePage);
-    }
+    };
     ws.onopen = function(){ws.send("155-questions-active");};
     wsRefreshTimeout = setTimeout(wsRefresh, 60000);
   })();
@@ -76,7 +76,7 @@
     $(".realtime-question").each(function(){
       var qLink = $("a.realtime-title", this);
       onQuestionActive({
-        apiSiteParameter: hostNameToSiteName(qLink.hostname)),
+        apiSiteParameter: hostNameToSiteName(qLink.hostname),
         id: qLink.href.match(/\/questions\/(\d+)\//)[1],
         titleEncodedFancy: $("h2", this).html(),
         bodySummary: $("p.realtime-body-summary",this).replace(/\.{3}$/,"").html(),
@@ -205,15 +205,15 @@
         menu.style.left = a.offsetLeft + "px";
       }
     };
-
-	  var wrapper = document.getElementsByClassName('topbar-wrapper')[0]; 
-	  var links = document.getElementsByClassName('topbar-links')[0];
-	  wrapper.insertBefore(menu, links);
+    
+    var wrapper = document.getElementsByClassName('topbar-wrapper')[0]; 
+    var links = document.getElementsByClassName('topbar-links')[0];
+    wrapper.insertBefore(menu, links);
 	
     css.textContent +=
       "#spam-helper-menu      {display: inline-block; padding-top:7px}" +
       "#spam-helper-menu > span {display: block; width: 150px; color: white}" +
-	    "#spam-helper-menu > span > input { vertical-align: -2px; }";
+      "#spam-helper-menu > span > input { vertical-align: -2px; }";
   }
 
   function notification_init(){
@@ -236,10 +236,10 @@
 
     var label = document.createElement("label");
     label.textContent = "enable notifications";
-	  label.htmlFor = "spamhelpernotificationcb";
+    label.htmlFor = "spamhelpernotificationcb";
     
     var span = document.createElement("span");
-	  span.appendChild(cb);
+    span.appendChild(cb);
     span.appendChild(label);
 	
     menu.appendChild(span);
