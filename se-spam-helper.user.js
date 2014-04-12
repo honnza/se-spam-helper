@@ -20,6 +20,7 @@
 
   var ws, wsRefreshTimeout;
   (function wsRefresh(){
+    wsRefreshTimeout = setTimeout(wsRefresh, 30000);
     ws = new WebSocket("ws://sockets.ny.stackexchange.com");
     ws.onmessage = function(){
       clearTimeout(wsRefreshTimeout);
@@ -31,7 +32,6 @@
       $("#question-list").load(location.href + " #question-list", scrapePage);
     };
     ws.onopen = function(){ws.send("155-questions-active");};
-    wsRefreshTimeout = setTimeout(wsRefresh, 60000);
   })();
 
   var css = document.createElement("style");
