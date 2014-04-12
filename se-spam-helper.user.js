@@ -82,8 +82,8 @@
       onQuestionActive({
         apiSiteParameter: hostNameToSiteName(qLink.hostname),
         id: qLink.href.match(/\/questions\/(\d+)\//)[1],
-        titleEncodedFancy: $("h2", this).html(),
-        bodySummary: $("p.realtime-body-summary",this).html().replace(/\.{3}$/,""),
+        titleEncodedFancy: $("h2", this).html().trim(),
+        bodySummary: $("p.realtime-body-summary",this).html().trim().replace(/\.{3}$/,""),
         url: qLink.href
       });
     });
