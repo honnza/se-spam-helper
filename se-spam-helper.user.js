@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.3
+// @version       2.4
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -21,7 +21,7 @@
   var ws, wsRefreshTimeout;
   (function wsRefresh(){
     wsRefreshTimeout = setTimeout(wsRefresh, 30000);
-    ws = new WebSocket("ws://sockets.ny.stackexchange.com");
+    ws = new WebSocket("ws://qa.sockets.stackexchange.com");
     ws.onmessage = function(){
       clearTimeout(wsRefreshTimeout);
       wsRefreshTimeout = setTimeout(wsRefresh, WEBSOCKET_TIMEOUT);
@@ -87,6 +87,7 @@
         url: qLink.href
       });
     });
+    hiderInstall();
   }
   
   function onQuestionActive(data){
