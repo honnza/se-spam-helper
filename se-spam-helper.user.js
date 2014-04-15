@@ -134,7 +134,7 @@
     var id = answer ? answer.answer_id : question.id;  
     if(!notifiedOf[site]) notifiedOf[site] = {};
     if(!notifiedOf[site][id]){
-      if(/\b(asshole|crap|damn|fag|fuck|idiot|shit|whore)s?\b/.test(text) ||
+      if(/\b(asshole|crap|damn|fag|fuck|idiot|nigga|shit|whore)s?\b/.test(text) ||
          is.mostlyUppercase(text) ||
          /\w+@(\w+\.)+\w{2,}/.test(text.replace(/\s/,'')) ||
          !answer && (
