@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.4
+// @version       2.4.6
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -134,13 +134,14 @@
     var id = answer ? answer.answer_id : question.id;  
     if(!notifiedOf[site]) notifiedOf[site] = {};
     if(!notifiedOf[site][id]){
-      if(/\b(asshole|crap|damn|fag|fuck|idiot|nigga|shit|whore)s?\b/.test(text) ||
+      if(/\b(ass(hole)?|bitch|crap|damn|fag|fuck|idiot|motherfucker|nigga|shit(hole)?|whore)e?s?\b/.test(text) ||
+         site == "meta" ||
          is.mostlyUppercase(text) ||
          /\w+@(\w+\.)+\w{2,}/.test(text.replace(/\s/,'')) ||
          !answer && (
-           /(?:[^a-z ] *){9,}/i.test(title) ||
+           /(?:[^a-hj-np-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
-           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers)\b/i.test(title)
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?)\b/i.test(title)
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
@@ -337,15 +338,18 @@
   function classToImageUrl(site){
     var exceptions = {
       "answers-onstartups":"onstartups",
+      "meta": "stackexchangemeta",
       "pt-stackoverflow":"br",
     };
     site = exceptions[site] || site;
-    site = site.replace(/^meta\-(.*)/, "$1meta");
+    site = site.replace(/^meta\-(.*)/, "$1meta"); //TODO: is this outdated?
     return "//cdn.sstatic.net/" + site + "/img/icon-48.png";
   }
   
   function hostNameToSiteName(host){
-    return host.split(".")[0];
+    var match;
+    if((match = host.match(/(\w+)\.stackexchange\.com/))) return match[1];
+    if((match = host.match(/(\w+)\.com/))) return match[1];
   }
 
   function htmlUnescape(html){
