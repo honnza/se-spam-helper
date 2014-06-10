@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.4.6
+// @version       2.4.7
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -135,10 +135,10 @@
     if(!notifiedOf[site]) notifiedOf[site] = {};
     if(!notifiedOf[site][id]){
       if(/\b(ass(hole)?|bitch|crap|damn|fag|fuck|idiot|motherfucker|nigga|shit(hole)?|whore)e?s?\b/.test(text) ||
-         site == "meta" ||
          is.mostlyUppercase(text) ||
          /\w+@(\w+\.)+\w{2,}/.test(text.replace(/\s/,'')) ||
          !answer && (
+           site == "meta" ||
            /(?:[^a-hj-np-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
            /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?)\b/i.test(title)
