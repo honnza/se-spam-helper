@@ -10,6 +10,7 @@
 /* jshint loopfunc:true, jquery:true */
 
 (function(){
+  debugger;
   var is = {
     mostlyUppercase : function(str){
       return (str.match(/[A-Z]/g)||[]).length > (str.match(/[a-z]/g)||[]).length;
@@ -183,6 +184,7 @@
   function checkPost(question, answer){
     var title = htmlUnescape(question.titleEncodedFancy);
     var site = question.apiSiteParameter;
+    var host = siteNameToHostName(site);
     var site_class = "realtime-" + siteToClass(site);
     var classname = site_class + "-" + question.id;
     var q_body = question.bodySummary ? htmlUnescape(question.bodySummary) : "";
@@ -202,8 +204,8 @@
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
-        notify(site, title, (answer ? "A - " : "Q - ") +
-                            (answer ? a_body.text() : q_body), question.url);
+        notify(site, title, (answer ? "A - " : "Q - ") + (answer ? a_body.text() : q_body),
+               ["http:/", host, (answer ? "a" : "q"), id].join("/"));
       }
       notifiedOf[site][id] = true;
       if(!notifiedOfToday[site]) notifiedOfToday[site] = {};
@@ -407,11 +409,13 @@
     var match;
     if((match = host.match(/(\w+)\.stackexchange\.com/))) return match[1];
     if((match = host.match(/(\w+)\.com/))) return match[1];
+    return host;
   }
   
   function siteNameToHostName(site){
-    var SLDSites = ["askubuntu", "stackapps", "superuser", "serverfault", "stackoverflow"];
+    var SLDSites = ["askubuntu", "stackapps", "superuser", "serverfault", "stackoverflow", "pt.stackoverflow"];
     if(SLDSites.indexOf(site) !== -1) return site + ".com";
+    else if(site.indexOf(".") !== -1) return site;
     else return site + ".stackexchange.com";
   }
 
