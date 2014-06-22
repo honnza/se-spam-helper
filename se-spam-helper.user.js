@@ -61,6 +61,7 @@
   var ooflagSites = {};
   var questionQueue = {};
   var siteWebsocketIDs = {};
+  var sitesByWebsocketID = {};
 
   var onQuestionQueueTimeout = flushQuestionQueue;
   var checkAnswer = checkPost, checkQuestion = checkPost;
@@ -78,7 +79,7 @@
     } else if(response.action === "155-questions-active"){
         onQuestionActive(data);
     } else if(response.action.match(/\d+-questions-active/)){
-        scrapePerSiteQuestion(data.body);
+        scrapePerSiteQuestion(data.body, data.siteid);
     } else {
         console.log("unknown response type: %s in %o", response.action, response);
     }
@@ -98,12 +99,12 @@
     hiderInstall();
   }
   
-  function scrapePerSiteQuestion(html){
+  function scrapePerSiteQuestion(html, siteId){
     var question = new DOMParser().parseFromString(html, "text/html")
       .getElementsByClassName("question-summary")[0];
     var qLink = question.querySelector("a.question-hyperlink");
     onQuestionActive({
-      apiSiteParameter: hostNameToSiteName(qLink.hostname),
+      apiSiteParameter: sitesByWebsocketID[siteId],
       id: question.id.split("-").pop(),
       titleEncodedFancy: $("h3 a", question).html().trim(),
       bodySummary: $(".excerpt", question).text().trim(),
@@ -129,7 +130,10 @@
             .head.querySelectorAll("script:not([src])");
           [].forEach.call(scripts, function(script){
             var match = /StackExchange\.realtime\.subscribeToActiveQuestions\(["']?(\d+)/.exec(script.innerHTML);
-            if(match) siteWebsocketIDs[site] = +match[1];
+            if(match){
+              siteWebsocketIDs[site] = match[1];
+              sitesByWebsocketID[match[1]] = site;
+            }  
           });
           if(siteWebsocketIDs[site]){
             console.log("the ID for %s is %o", site, siteWebsocketIDs[site]);
