@@ -53,6 +53,7 @@
   var notifiedOf = {}, notifiedOfToday = {};
   var ooflagSites = {};
   var questionQueue = {};
+  var siteWebsocketIDs = {};
 
   var onQuestionQueueTimeout = flushQuestionQueue;
   var checkAnswer = checkPost, checkQuestion = checkPost;
@@ -64,10 +65,13 @@
   
   function onMessage(e){
     var response = JSON.parse(e.data);
+    var data = response.data && JSON.parse(response.data);
     if(response.action === "hb"){
       ws.send("hb");
-    } else if( response.action === "155-questions-active"){
-        onQuestionActive(JSON.parse(response.data));
+    } else if(response.action === "155-questions-active"){
+        onQuestionActive(data);
+    } else if(response.action.match(/\d+-questions-active/){
+        onQuestionActive(scrapePerSiteQuestion(data.body));
     } else {
         console.log("unknown response type: %s in %o", response.action, response);
     }
@@ -85,6 +89,10 @@
       });
     });
     hiderInstall();
+  }
+  
+  function scrapePerSiteQuestion(html){
+    debugger;
   }
   
   function onQuestionActive(data){
