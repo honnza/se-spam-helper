@@ -64,15 +64,12 @@
   
   function onMessage(e){
     var response = JSON.parse(e.data);
-    switch(response.action){
-      case "hb":
-        ws.send("hb");
-        break;
-      case "155-questions-active":
+    if(response.action === "hb"){
+      ws.send("hb");
+    } else if( response.action === "155-questions-active"){
         onQuestionActive(JSON.parse(response.data));
-        break;
-      default:
-        console.log("unknown response type: " + response.action + " in " + response);
+    } else {
+        console.log("unknown response type: %s in %o", response.action, response);
     }
   }
   
