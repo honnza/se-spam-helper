@@ -105,7 +105,7 @@
     onQuestionActive({
       apiSiteParameter: hostNameToSiteName(qLink.hostname),
       id: question.id.split("-").pop(),
-      titleEnodedFancy: $("h3", this).html().trim(),
+      titleEnodedFancy: $("h3", question).html().trim(),
       bodySummary: $(".excerpt", question).text().trim(),
       url: qLink.href
     });
