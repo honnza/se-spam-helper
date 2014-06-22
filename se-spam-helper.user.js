@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.4.7
+// @version       2.5
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -78,7 +78,7 @@
     } else if(response.action === "155-questions-active"){
         onQuestionActive(data);
     } else if(response.action.match(/\d+-questions-active/)){
-        onQuestionActive(scrapePerSiteQuestion(data.body));
+        scrapePerSiteQuestion(data.body);
     } else {
         console.log("unknown response type: %s in %o", response.action, response);
     }
@@ -99,7 +99,16 @@
   }
   
   function scrapePerSiteQuestion(html){
-    debugger;
+    var question = new DOMParser().parseFromString(html, "text/html")
+      .getElementsByClassName("question-summary")[0];
+    var qLink = question.querySelector("a.question-hyperlink");
+    onQuestionActive({
+      apiSiteParameter: hostNameToSiteName(qLink.hostname),
+      id: question.id.split("-").pop(),
+      titleEnodedFancy: $("h3", this).html().trim(),
+      bodySummary: $(".excerpt", question).text().trim(),
+      url: qLink, href
+    });
   }
   
   function checkSiteHasSocket(site){
@@ -127,7 +136,6 @@
             ws.send(siteWebsocketIDs[site] + "-questions-active");
           } else {
             console.log("could not find the ID for %s", site);
-            debugger;
           }
         }
       });
