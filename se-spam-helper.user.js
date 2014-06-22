@@ -31,7 +31,14 @@
       console.log.apply(console, ["console.error"].concat(arguments));
       $("#mainArea").load(location.href + " #mainArea", scrapePage);
     };
-    ws.onopen = function(){ws.send("155-questions-active");};
+    ws.onopen = function(){
+      ws.send("155-questions-active");
+      for(site in siteWebsocketIDs){
+        if(siteWebsocketIDs[site]){
+          ws.send(siteWebsocketIDs[site] + "-questions-active");
+        }
+      }
+    };
   })();
 
   var css = document.createElement("style");
@@ -70,7 +77,7 @@
       ws.send("hb");
     } else if(response.action === "155-questions-active"){
         onQuestionActive(data);
-    } else if(response.action.match(/\d+-questions-active/){
+    } else if(response.action.match(/\d+-questions-active/)){
         onQuestionActive(scrapePerSiteQuestion(data.body));
     } else {
         console.log("unknown response type: %s in %o", response.action, response);
@@ -95,19 +102,32 @@
     debugger;
   }
   
-  checkSiteHasSocket(site){
+  function checkSiteHasSocket(site){
     if(siteWebsocketIDs[site] === undefined){
       siteWebsocketIDs[site] = false; // prevent double fetching
+      console.log("unknown ID for %s", site);
       GM_xmlhttpRequest({
         method: "GET",
-        url: "http://" + siteNameToHostName(site);
+        url: "http://" + siteNameToHostName(site),
         ontimeout: checkSiteHasSocket.bind(null, site),
         onerror: function(response) {
           console.log(response);
           checkSiteHasSocket(site); // retry
         },
         onload: function(response){
-          debugger;
+          var scripts = (new DOMParser())
+            .parseFromString(response.response, "text/html")
+            .head.querySelectorAll("script:not([src])");
+          [].forEach.call(scripts, function(script){
+            var match = /StackExchange\.realtime\.subscribeToActiveQuestions\(([^')]+)/.exec(script.innerHTML);
+            if(match) siteWebsocketIDs[site] = JSON.parse(match[1]);
+          });
+          if(siteWebsocketIDs[site]){
+            console.log("the ID for %s is %o", site, siteWebsocketIDs[site])
+            ws.send(siteWebsocketIDs[site] + "-questions-active");
+          } else {
+            console.log("could not find the ID for %s", site);
+          }
         }
       });
     }
@@ -376,9 +396,9 @@
     if((match = host.match(/(\w+)\.com/))) return match[1];
   }
   
-  siteNameToHostName(site){
-    SLDSites = ["askubuntu", "stackapps", "superuser", "serverfault", "stackoverflow"];
-    if(~SLDSites.indexOf(site)) return site + ".com";
+  function siteNameToHostName(site){
+    var SLDSites = ["askubuntu", "stackapps", "superuser", "serverfault", "stackoverflow"];
+    if(SLDSites.indexOf(site) !== -1) return site + ".com";
     else return site + ".stackexchange.com";
   }
 
