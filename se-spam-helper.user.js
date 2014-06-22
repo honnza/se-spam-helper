@@ -33,7 +33,7 @@
     };
     ws.onopen = function(){
       ws.send("155-questions-active");
-      for(site in siteWebsocketIDs){
+      for(var site in siteWebsocketIDs){
         if(siteWebsocketIDs[site]){
           ws.send(siteWebsocketIDs[site] + "-questions-active");
         }
@@ -107,7 +107,7 @@
       id: question.id.split("-").pop(),
       titleEnodedFancy: $("h3", this).html().trim(),
       bodySummary: $(".excerpt", question).text().trim(),
-      url: qLink, href
+      url: qLink.href
     });
   }
   
@@ -132,7 +132,7 @@
             if(match) siteWebsocketIDs[site] = +match[1];
           });
           if(siteWebsocketIDs[site]){
-            console.log("the ID for %s is %o", site, siteWebsocketIDs[site])
+            console.log("the ID for %s is %o", site, siteWebsocketIDs[site]);
             ws.send(siteWebsocketIDs[site] + "-questions-active");
           } else {
             console.log("could not find the ID for %s", site);
