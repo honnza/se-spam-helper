@@ -97,8 +97,19 @@
   
   checkSiteHasSocket(site){
     if(siteWebsocketIDs[site] === undefined){
-       siteWebsocketIDs[site] = false; // prevent double fetching
-       
+      siteWebsocketIDs[site] = false; // prevent double fetching
+      GM_xmlhttpRequest({
+        method: "GET",
+        url: "http://" + siteNameToHostName(site);
+        ontimeout: checkSiteHasSocket.bind(null, site),
+        onerror: function(response) {
+          console.log(response);
+          checkSiteHasSocket(site); // retry
+        },
+        onload: function(response){
+          debugger;
+        }
+      });
     }
   }
   
