@@ -95,6 +95,13 @@
     debugger;
   }
   
+  checkSiteHasSocket(site){
+    if(siteWebsocketIDs[site] === undefined){
+       siteWebsocketIDs[site] = false; // prevent double fetching
+       
+    }
+  }
+  
   function onQuestionActive(data){
     var site = data.apiSiteParameter;
     var id = data.id;
@@ -110,6 +117,7 @@
     }
     checkQuestion(data);
     hiderInstall();
+    checkSiteHasSocket(site);
   }
   
   function flushQuestionQueue(queue){
@@ -355,6 +363,12 @@
     var match;
     if((match = host.match(/(\w+)\.stackexchange\.com/))) return match[1];
     if((match = host.match(/(\w+)\.com/))) return match[1];
+  }
+  
+  siteNameToHostName(site){
+    SLDSites = ["askubuntu", "stackapps", "superuser", "serverfault", "stackoverflow"];
+    if(~SLDSites.indexOf(site)) return site + ".com";
+    else return site + ".stackexchange.com";
   }
 
   function htmlUnescape(html){
