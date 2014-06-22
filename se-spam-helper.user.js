@@ -119,14 +119,15 @@
             .parseFromString(response.response, "text/html")
             .head.querySelectorAll("script:not([src])");
           [].forEach.call(scripts, function(script){
-            var match = /StackExchange\.realtime\.subscribeToActiveQuestions\(([^')]+)/.exec(script.innerHTML);
-            if(match) siteWebsocketIDs[site] = JSON.parse(match[1]);
+            var match = /StackExchange\.realtime\.subscribeToActiveQuestions\(["']?(\d+)/.exec(script.innerHTML);
+            if(match) siteWebsocketIDs[site] = +match[1];
           });
           if(siteWebsocketIDs[site]){
             console.log("the ID for %s is %o", site, siteWebsocketIDs[site])
             ws.send(siteWebsocketIDs[site] + "-questions-active");
           } else {
             console.log("could not find the ID for %s", site);
+            debugger;
           }
         }
       });
