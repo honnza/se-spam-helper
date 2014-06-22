@@ -84,7 +84,7 @@
         apiSiteParameter: hostNameToSiteName(qLink.hostname),
         id: qLink.href.match(/\/questions\/(\d+)\//)[1],
         titleEncodedFancy: $("h2", this).html().trim(),
-        bodySummary: $("p.realtime-body-summary",this).html().trim().replace(/\.{3}$/,""),
+        bodySummary: undefined,
         url: qLink.href
       });
     });
@@ -152,7 +152,7 @@
     var site = question.apiSiteParameter;
     var site_class = "realtime-" + siteToClass(site);
     var classname = site_class + "-" + question.id;
-    var q_body = htmlUnescape(question.bodySummary);
+    var q_body = question.bodySummary ? htmlUnescape(question.bodySummary) : "";
     var a_body; if(answer) a_body = $("<div/>", {html: answer.body});
     var text = answer ? a_body.text() : title + "\n" + q_body;
     var id = answer ? answer.answer_id : question.id;  
