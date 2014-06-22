@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.5
+// @version       2.5.1
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -93,8 +93,7 @@
         apiSiteParameter: hostNameToSiteName(qLink.hostname),
         id: qLink.href.match(/\/questions\/(\d+)\//)[1],
         titleEncodedFancy: $("h2", this).html().trim(),
-        bodySummary: undefined,
-        url: qLink.href
+        bodySummary: undefined
       });
     });
     hiderInstall();
