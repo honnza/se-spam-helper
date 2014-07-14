@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.5.1
+// @version       2.6
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -21,6 +21,9 @@
 
   var ws, wsRefreshTimeout;
   (function wsRefresh(){
+    //refresh the official stream
+    StackExchange.realtime.init("ws://qa.sockets.stackexchange.com");
+    //establish our own socket
     wsRefreshTimeout = setTimeout(wsRefresh, 30000);
     ws = new WebSocket("ws://qa.sockets.stackexchange.com");
     ws.onmessage = function(){
@@ -199,7 +202,7 @@
            site == "meta" ||
            /(?:[^a-hj-np-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
-           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?)\b/i.test(title)
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|11s)\b/i.test(title)
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
