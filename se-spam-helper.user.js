@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.6
+// @version       2.6.2
 // ==/UserScript==
 
 /* global Notification, GM_xmlhttpRequest */
@@ -199,10 +199,10 @@
          is.mostlyUppercase(text) ||
          /\w+@(\w+\.)+\w{2,}/.test(text.replace(/\s/,'')) ||
          !answer && (
-           site == "meta" ||
+           site == "meta" || site == "drupal" ||
            /(?:[^a-hj-np-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
-           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|11s)\b/i.test(title)
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl)\b/i.test(title)
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
