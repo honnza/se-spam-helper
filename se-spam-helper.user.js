@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.7
+// @version       2.7.1
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -53,12 +53,11 @@
   var daily_css = document.createElement("style");
   document.head.appendChild(daily_css);
 
-  var ms_in_day = 1000 * 60 * 60 * 24;
-  function msUntilMidnight(){return ms_in_day - Date.now() % ms_in_day;}
-  (function reset_daily_css(){
+  var hours = 1000 * 60 * 60;
+  (function resetDailyCss(){
     daily_css.textContent = "";
-    setTimeout(reset_daily_css, msUntilMidnight);
     ooflagSites = {};
+    atGMT(0, resetDailyCss);
   })();
   var menu;
   var notification_granted;
@@ -77,6 +76,11 @@
   notification_init();
   window.addEventListener("unload", onbeforeunload);
   scrapePage();
+  
+  function atGMT(time, func){
+    var timeLeft = (time - Date.now()) % (24 * hours);
+    setTimeout(func, timeLeft);
+  }
   
   function onMessage(e){
     var response = JSON.parse(e.data);
@@ -381,7 +385,7 @@
             }
             if(!response.quota_remaining){
               alert ("I'm out of API quota!");
-              setTimeout(function(){apiQueueDeferred.resolve();}, msUntilMidnight());
+              atGMT(10*hours, function(){apiQueueDeferred.resolve();});
             }else if(response.backoff){
               console.log("got backoff! " + response.backoff);
               setTimeout(function(){apiQueueDeferred.resolve();}, response.backoff * 1000);
