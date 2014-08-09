@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.7.1
+// @version       2.7.2
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -187,7 +187,10 @@
     clearTimeout(queue.timeout);
     queue.timeout = null;
     console.log("requesting answers for " + ids.length + " questions on " + queue.site);
-    seApiCall("questions", ids.join(";"), "answers", {filter:"!Icp(Q.D5PTi18OQWD", site:queue.site})
+    seApiCall("questions", ids.join(";"), "answers", {
+      filter: "!Icp(Q.D5PTi18OQWD", 
+      site: queue.site,
+      partialOk: true})
     .then(function(response){      
       response.items.forEach(function(answer){
         checkAnswer(questions[answer.question_id], answer);
