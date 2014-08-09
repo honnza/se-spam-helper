@@ -3,13 +3,16 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.6.2
+// @version       2.7
 // ==/UserScript==
 
-/* global Notification, GM_xmlhttpRequest */
+/* global unsafeWindow, GM_xmlhttpRequest */
 /* jshint loopfunc:true, jquery:true */
 
-(function(){
+(function(window){
+  var $ = window.$;
+  var Notification = window.Notification;
+  var StackExchange = window.StackExchange;
   debugger;
   var is = {
     mostlyUppercase : function(str){
@@ -151,6 +154,14 @@
   
   function onQuestionActive(data){
     var site = data.apiSiteParameter;
+    checkQuestion(data);
+    hiderInstall();
+    checkSiteHasSocket(site);
+    questionQueuePush(data);
+  }
+  
+  function questionQueuePush(data){
+    var site = data.apiSiteParameter;
     var id = data.id;
     var queue = questionQueue[site] = questionQueue[site] || {site:site, questions:{}, length:0};
     if(!queue.questions[id]) queue.length++;
@@ -162,9 +173,6 @@
         queue.timeout = setTimeout(onQuestionQueueTimeout.bind(null, queue), QUEUE_TIMEOUT);
       }
     }
-    checkQuestion(data);
-    hiderInstall();
-    checkSiteHasSocket(site);
   }
   
   function flushQuestionQueue(queue){
@@ -176,10 +184,17 @@
     queue.timeout = null;
     console.log("requesting answers for " + ids.length + " questions on " + queue.site);
     seApiCall("questions", ids.join(";"), "answers", {filter:"!Icp(Q.D5PTi18OQWD", site:queue.site})
-    .then(function(answers){
-      answers.forEach(function(answer){
+    .then(function(response){      
+      response.items.forEach(function(answer){
         checkAnswer(questions[answer.question_id], answer);
       });
+      if(response.partial){
+        var requeue = ids.slice(ids.indexOf(response.items.pop().question_id));
+        console.log("requeueing %d questions", requeue.length);
+        requeue.forEach(function(id){
+          questionQueuePush(questions[id]);
+        });
+      }
     });
   }
   
@@ -202,7 +217,7 @@
            site == "meta" || site == "drupal" ||
            /(?:[^a-hj-np-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
-           /\b(vs?|l[ae]|live|watch|free|cheap|online|download|nike|training|dress|fashion|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl)\b/i.test(title)
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|best|nike|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl)\b/i.test(title)
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
@@ -331,9 +346,11 @@
   }
   
   var apiQueue = new Mutex();
-  function seApiCall(){
+  function seApiCall(/* path..., options */){
     var path = [].slice.call(arguments);
     var options = path.pop();
+    var partialOk = options.partialOk;
+    delete options.partialOk;
     var responseDeferred = $.Deferred();
     var results = []; 
     (function getPage(page){ 
@@ -355,12 +372,12 @@
             if(response.error_message) throw response.error_message;
             console.log("got response, remaining quota: " + response.quota_remaining);
             [].push.apply(results, response.items);
-            if(response.has_more){
+            if(response.has_more && !partialOk){
               console.log("need more pages");
               getPage(page + 1);
             }else{            
               console.log("collected " + results.length + " results");
-              responseDeferred.resolve(results);
+              responseDeferred.resolve({items: results, partial: !!response.has_more});
             }
             if(!response.quota_remaining){
               alert ("I'm out of API quota!");
@@ -424,4 +441,4 @@
   function htmlUnescape(html){
     return $("<div>").html(html).text();
   }
-})();
+})(unsafeWindow || window);
