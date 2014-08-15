@@ -201,15 +201,16 @@
   }
   
   function checkPost(question, answer){
-    var title = htmlUnescape(question.titleEncodedFancy);
-    var site = question.apiSiteParameter;
-    var host = siteNameToHostName(site);
+    var title = question.title;
+    var host = $("<a>", {href: question.link}).prop("hostname");
+    var site = hostNameToSiteName(host);
     var site_class = "realtime-" + siteToClass(site);
-    var classname = site_class + "-" + question.id;
-    var q_body = question.bodySummary ? htmlUnescape(question.bodySummary) : "";
+    var classname = site_class + "-" + question.question_id;
+    var q_body = $("<div/>", {html: question.body});
     var a_body; if(answer) a_body = $("<div/>", {html: answer.body});
     var text = answer ? a_body.text() : title + "\n" + q_body;
-    var id = answer ? answer.answer_id : question.id;  
+    var id = answer ? answer.answer_id : question.question_id;
+    var link = answer ? answer.link : question.link;  
     if(!notifiedOf[site]) notifiedOf[site] = {};
     if(!notifiedOf[site][id]){
       if(/\b(ass(hole)?|bitch|crap|damn|fag|fuck|idiot|motherfucker|nigga|shit(hole)?|whore)e?s?\b/.test(text) ||
@@ -223,8 +224,7 @@
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
-        notify(site, title, (answer ? "A - " : "Q - ") + (answer ? a_body.text() : q_body),
-               ["http:/", host, (answer ? "a" : "q"), id].join("/"));
+        notify(site, title, (answer ? "A - " : "Q - ") + (answer ? a_body.text() : q_body), link);
       }
       notifiedOf[site][id] = true;
       if(!notifiedOfToday[site]) notifiedOfToday[site] = {};
