@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.7.2
+// @version       2.7.3
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -196,7 +196,10 @@
         checkAnswer(questions[answer.question_id], answer);
       });
       if(response.partial){
-        var requeue = ids.slice(ids.indexOf(response.items.pop().question_id));
+        console.log("request IDs: %s; response: %o", ids, response)
+        var partialQ = ids.indexOf(response.items.pop().question_id);
+        if(!~partialQ) debugger;
+        var requeue = ids.slice(partialQ);
         console.log("requeueing %d questions", requeue.length);
         requeue.forEach(function(id){
           questionQueuePush(questions[id]);
@@ -224,7 +227,7 @@
            site == "meta" || site == "drupal" ||
            /(?:[^a-hj-np-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
-           /\b(vs?|l[ae]|live|watch|free|cheap|online|best|nike|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl)\b/i.test(title)
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|best|nike|buy|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl|fifa)\b/i.test(title)
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
