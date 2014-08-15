@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.7.3
+// @version       2.7.4
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -197,7 +197,7 @@
       });
       if(response.partial){
         console.log("request IDs: %s; response: %o", ids, response)
-        var partialQ = ids.indexOf(response.items.pop().question_id);
+        var partialQ = ids.indexOf(response.items.pop().question_id.toString());
         if(!~partialQ) debugger;
         var requeue = ids.slice(partialQ);
         console.log("requeueing %d questions", requeue.length);
