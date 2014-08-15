@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       2.7.4
+// @version       3.0
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -187,24 +187,16 @@
     clearTimeout(queue.timeout);
     queue.timeout = null;
     console.log("requesting answers for " + ids.length + " questions on " + queue.site);
-    seApiCall("questions", ids.join(";"), "answers", {
-      filter: "!Icp(Q.D5PTi18OQWD", 
-      site: queue.site,
-      partialOk: true})
+    seApiCall("questions", ids.join(";"), {
+      filter: "!1PVL)N6vDMxiOTE-borB-C1iaOEiL.tx*", 
+      site: queue.site)
     .then(function(response){      
-      response.items.forEach(function(answer){
-        checkAnswer(questions[answer.question_id], answer);
-      });
-      if(response.partial){
-        console.log("request IDs: %s; response: %o", ids, response)
-        var partialQ = ids.indexOf(response.items.pop().question_id.toString());
-        if(!~partialQ) debugger;
-        var requeue = ids.slice(partialQ);
-        console.log("requeueing %d questions", requeue.length);
-        requeue.forEach(function(id){
-          questionQueuePush(questions[id]);
+      response.items.forEach(function(question){
+        checkQuestion(question);
+        question.answers.forEach(function(answer){
+          checkAnswer(answer);
         });
-      }
+      });
     });
   }
   
