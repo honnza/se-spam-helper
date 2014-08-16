@@ -103,7 +103,7 @@
         body: undefined
         link: qLink.href,
         site: hostNameToSiteName(qLink.hostname),
-        tags: $(".post-tag", question).map(function(){return this.textContent}),
+        tags: $(".post-tag", this).map(function(){return this.textContent}),
         title: $("h2", this).html().trim(),
         question_id: qLink.href.match(/\/questions\/(\d+)\//)[1],
       });
