@@ -157,17 +157,16 @@
   }
   
   function parseRealtimeSocket(wsData){
-    var site = data.apiSiteParameter;
     var qData = {
        body: wsData.bodySummary,
-       site: site,
+       site: wsData.apiSiteParameter,
        tags: wsData.tags,
        title: htmlUnescape(question.titleEncodedFancy),
        question_id: wsData.id,
     }
     checkQuestion(qData);
     hiderInstall();
-    checkSiteHasSocket(site);
+    checkSiteHasSocket(qData.apiSiteParameter);
     questionQueuePush(qData);
   }
   
