@@ -194,6 +194,7 @@
       site: queue.site)
     .then(function(response){      
       response.items.forEach(function(question){
+        question.site = site;
         checkQuestion(question);
         question.answers.forEach(function(answer){
           checkAnswer(answer);
