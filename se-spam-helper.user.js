@@ -88,7 +88,7 @@
     if(response.action === "hb"){
       ws.send("hb");
     } else if(response.action === "155-questions-active"){
-        parseRealtimeSocket(data);
+        onQuestionActive(parseRealtimeSocket(data));
     } else if(response.action.match(/\d+-questions-active/)){
         scrapePerSiteQuestion(data.body, data.siteid);
     } else {
@@ -114,11 +114,12 @@
       .getElementsByClassName("question-summary")[0];
     var qLink = question.querySelector("a.question-hyperlink");
     onQuestionActive({
-      apiSiteParameter: sitesByWebsocketID[siteId],
-      id: question.id.split("-").pop(),
-      titleEncodedFancy: $("h3 a", question).html().trim(),
-      bodySummary: $(".excerpt", question).text().trim(),
-      url: qLink.href
+      body: $(".excerpt", question).html().trim(),
+      link: qLink.href
+      site: sitesByWebsocketID[siteId],
+      tags: $(".post-tag", question).map(function(){return this.textContent});
+      title: $("h3 a", question).text().trim(),
+      question_id: question.id.split("-").pop(),
     });
   }
   
@@ -157,13 +158,16 @@
   }
   
   function parseRealtimeSocket(wsData){
-    var qData = {
+    return{
        body: wsData.bodySummary,
+       link: wsData.url,
        site: wsData.apiSiteParameter,
        tags: wsData.tags,
        title: htmlUnescape(question.titleEncodedFancy),
        question_id: wsData.id,
     }
+  }
+  function onQuestionActive();
     checkQuestion(qData);
     hiderInstall();
     checkSiteHasSocket(qData.apiSiteParameter);
