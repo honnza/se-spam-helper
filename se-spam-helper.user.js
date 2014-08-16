@@ -104,7 +104,7 @@
         link: qLink.href,
         site: hostNameToSiteName(qLink.hostname),
         tags: $(".post-tag", this).map(function(){return this.textContent;}),
-        title: $("h2", this).html().trim(),
+        title: $("h2", this).text().trim(),
         question_id: qLink.href.match(/\/questions\/(\d+)\//)[1],
       });
     });
