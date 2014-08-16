@@ -156,20 +156,22 @@
     }
   }
   
-  function onQuestionActive(data){
+  function onQuestionActive(wsData){
     var site = data.apiSiteParameter;
-    checkQuestion(data);
+    var qData = {
+    
+    checkQuestion(qData);
     hiderInstall();
     checkSiteHasSocket(site);
-    questionQueuePush(data);
+    questionQueuePush(qData);
   }
   
-  function questionQueuePush(data){
-    var site = data.apiSiteParameter;
-    var id = data.id;
+  function questionQueuePush(qData){
+    var site = qData.site;
+    var id = qData.question_id;
     var queue = questionQueue[site] = questionQueue[site] || {site:site, questions:{}, length:0};
     if(!queue.questions[id]) queue.length++;
-    queue.questions[id] = data;
+    queue.questions[id] = qData;
     if(queue.length >= 100){
       flushQuestionQueue(queue);
     }else{
@@ -202,7 +204,7 @@
   
   function checkPost(question, answer){
     var title = question.title;
-    var host = $("<a>", {href: question.link}).prop("hostname");
+    var host = question.site;
     var site = hostNameToSiteName(host);
     var site_class = "realtime-" + siteToClass(site);
     var classname = site_class + "-" + question.question_id;
