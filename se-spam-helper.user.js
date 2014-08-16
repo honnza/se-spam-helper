@@ -100,10 +100,10 @@
     $(".realtime-question:visible").each(function(){
       var qLink = this.querySelector("a.realtime-question-url");
       onQuestionActive({
-        body: undefined
+        body: undefined,
         link: qLink.href,
         site: hostNameToSiteName(qLink.hostname),
-        tags: $(".post-tag", this).map(function(){return this.textContent}),
+        tags: $(".post-tag", this).map(function(){return this.textContent;}),
         title: $("h2", this).html().trim(),
         question_id: qLink.href.match(/\/questions\/(\d+)\//)[1],
       });
@@ -117,9 +117,9 @@
     var qLink = question.querySelector("a.question-hyperlink");
     onQuestionActive({
       body: $(".excerpt", question).html().trim(),
-      link: qLink.href
+      link: qLink.href,
       site: sitesByWebsocketID[siteId],
-      tags: $(".post-tag", question).map(function(){return this.textContent}),
+      tags: $(".post-tag", question).map(function(){return this.textContent;}),
       title: $("h3 a", question).text().trim(),
       question_id: question.id.split("-").pop(),
     });
@@ -165,11 +165,12 @@
        link: wsData.url,
        site: wsData.apiSiteParameter,
        tags: wsData.tags,
-       title: htmlUnescape(question.titleEncodedFancy),
+       title: htmlUnescape(wsData.titleEncodedFancy),
        question_id: wsData.id,
-    }
+    };
   }
-  function onQuestionActive();
+  
+  function onQuestionActive(qData){
     checkQuestion(qData);
     hiderInstall();
     checkSiteHasSocket(qData.apiSiteParameter);
@@ -193,7 +194,6 @@
   
   function flushQuestionQueue(queue){
     var ids = Object.keys(queue.questions);
-    var questions = queue.questions;
     queue.length = 0;
     queue.questions = {};
     clearTimeout(queue.timeout);
@@ -201,10 +201,10 @@
     console.log("requesting answers for " + ids.length + " questions on " + queue.site);
     seApiCall("questions", ids.join(";"), {
       filter: "!1PVL)N6vDMxiOTE-borB-C1iaOEiL.tx*", 
-      site: queue.site)
+      site: queue.site})
     .then(function(response){      
       response.items.forEach(function(question){
-        question.site = site;
+        question.site = queue.site;
         checkQuestion(question);
         question.answers.forEach(function(answer){
           checkAnswer(answer);
