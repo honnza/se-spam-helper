@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.0.0.2
+// @version       3.0.1
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -237,7 +237,11 @@
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
-        notify(site, title, (answer ? "A - " : "Q - ") + (answer?a_body:q_body).text(), link);
+        notify(site, title,
+               answer ? "A - " + a_body.text() :
+               question.body ? "Q - " + q_body.text() :
+               undefined, 
+               link);
       }
       notifiedOf[site][id] = true;
       if(!notifiedOfToday[site]) notifiedOfToday[site] = {};
