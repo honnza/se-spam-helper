@@ -88,7 +88,7 @@
     if(response.action === "hb"){
       ws.send("hb");
     } else if(response.action === "155-questions-active"){
-        onQuestionActive(data);
+        parseRealtimeSocket(data);
     } else if(response.action.match(/\d+-questions-active/)){
         scrapePerSiteQuestion(data.body, data.siteid);
     } else {
@@ -156,10 +156,15 @@
     }
   }
   
-  function onQuestionActive(wsData){
+  function parseRealtimeSocket(wsData){
     var site = data.apiSiteParameter;
     var qData = {
-    
+       body: wsData.bodySummary,
+       site: site,
+       tags: wsData.tags,
+       title: htmlUnescape(question.titleEncodedFancy),
+       question_id: wsData.id,
+    }
     checkQuestion(qData);
     hiderInstall();
     checkSiteHasSocket(site);
