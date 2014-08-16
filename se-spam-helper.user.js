@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.0.0.1
+// @version       3.0.0.2
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -173,7 +173,7 @@
   function onQuestionActive(qData){
     checkQuestion(qData);
     hiderInstall();
-    checkSiteHasSocket(qData.apiSiteParameter);
+    checkSiteHasSocket(qData.site);
     questionQueuePush(qData);
   }
   
