@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.0.3
+// @version       3.0.3.1
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -90,7 +90,7 @@
     } else if(response.action === "155-questions-active"){
         onQuestionActive(parseRealtimeSocket(data));
     } else if(response.action.match(/\d+-questions-active/)){
-        scrapePerSiteQuestion(data.body, data.siteid);
+        scrapePerSiteQuestion(data.body, sitesByWebsocketID[data.siteid]);
     } else {
         console.log("unknown response type: %s in %o", response.action, response);
     }
