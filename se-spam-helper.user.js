@@ -280,7 +280,7 @@
     if(!ooflagSites[site]){
       var notification = new Notification(title, {
         icon: classToImageUrl(siteToClass(site)),
-        body: body
+        body: body || ''
       });
       notification.onclick = function(){
         open(url);
