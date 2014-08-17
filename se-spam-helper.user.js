@@ -202,7 +202,7 @@
     queue.timeout = null;
     console.log("requesting answers for " + ids.length + " questions on " + queue.site);
     seApiCall("questions", ids.join(";"), {
-      filter: "!1PVL)N6vDMxiOTE-borB-C1iaOEiL.tx*", 
+      filter: "!*7Pmg80Pr9s_V)9KFpY)yE0v(7Iq", 
       site: queue.site})
     .then(function(response){      
       response.items.forEach(function(question){
