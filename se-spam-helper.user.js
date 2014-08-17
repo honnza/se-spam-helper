@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.0.1
+// @version       3.0.1.1
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -114,7 +114,9 @@
   function scrapePerSiteQuestion(html, siteId){
     var question = new DOMParser().parseFromString(html, "text/html")
       .getElementsByClassName("question-summary")[0];
-    var qLink = question.querySelector("a.question-hyperlink");
+    var qLink = document.createElement("a");
+    //set the owner document for the purposes of URL resolution
+    qLink.href = question.querySelector("a.question-hyperlink").getAttribute("href");
     onQuestionActive({
       body: $(".excerpt", question).html().trim(),
       link: qLink.href,
