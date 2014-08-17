@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.0.3.1
+// @version       3.0.3.2
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -119,7 +119,7 @@
     onQuestionActive({
       body: $(".excerpt", question).html().trim(),
       link: qLink.href,
-      site: sitesByWebsocketID[siteId],
+      site: site,
       tags: $(".post-tag", question).map(function(){return this.textContent;}),
       title: $("h3 a", question).text().trim(),
       question_id: question.id.split("-").pop(),
