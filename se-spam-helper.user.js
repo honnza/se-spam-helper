@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.0.4
+// @version       3.0.4.1
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -118,7 +118,7 @@
               + question.querySelector("a.question-hyperlink").getAttribute("href");
     onQuestionActive({
       body: $(".excerpt", question).html().trim(),
-      link: qLink.href,
+      link: qLink,
       site: site,
       tags: $(".post-tag", question).map(function(){return this.textContent;}),
       title: $("h3 a", question).text().trim(),
@@ -281,7 +281,6 @@
         body: body || ''
       });
       notification.onclick = function(){
-        console.log("opening %s", url)
         open(url);
       };
     }
