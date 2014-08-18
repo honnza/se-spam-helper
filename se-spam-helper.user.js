@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.0.3.2
+// @version       3.0.4
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -129,7 +129,6 @@
   function checkSiteHasSocket(site){
     if(siteWebsocketIDs[site] === undefined){
       siteWebsocketIDs[site] = false; // prevent double fetching
-      console.log("unknown ID for %s", site);
       GM_xmlhttpRequest({
         method: "GET",
         url: "http://" + siteNameToHostName(site),
@@ -201,7 +200,7 @@
     queue.timeout = null;
     console.log("requesting answers for " + ids.length + " questions on " + queue.site);
     seApiCall("questions", ids.join(";"), {
-      filter: "!*7Pmg80Pr9s_V)9KFpY)yE0v(7Iq", 
+      filter: "!*7Pmg7yi0JKTUuaBigtbGINmVtEq", 
       site: queue.site})
     .then(function(response){      
       response.items.forEach(function(question){
@@ -282,6 +281,7 @@
         body: body || ''
       });
       notification.onclick = function(){
+        console.log("opening %s", url)
         open(url);
       };
     }
