@@ -6,7 +6,7 @@
 // @version       3.1
 // ==/UserScript==
 
-/* global unsafeWindow, GM_xmlhttpRequest */
+/* global unsafeWindow, GM_xmlhttpRequest, GM_openInTab, GM_setClipboard */
 /* jshint loopfunc:true, jquery:true */
 
 (function(window){
