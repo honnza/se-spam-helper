@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.0.6
+// @version       3.1
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest */
@@ -233,7 +233,7 @@
            site == "meta" || site == "drupal" ||
            /(?:[^a-hj-np-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
-           /\b(vs?|l[ae]|live|watch|free|cheap|online|best|nike|buy|replica|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl|fifa)\b/i.test(title)
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|best|nike|buy|replica|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl|fifa|escort)\b/i.test(title)
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
@@ -281,7 +281,8 @@
         body: body || ''
       });
       notification.onclick = function(){
-        open(url);
+        GM_openInTab(url);
+        GM_setClipboard(url);
       };
     }
   }
