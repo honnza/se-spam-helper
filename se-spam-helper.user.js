@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.1
+// @version       3.1.2
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest, GM_openInTab, GM_setClipboard */
@@ -114,7 +114,7 @@
   function scrapePerSiteQuestion(html, site){
     var question = new DOMParser().parseFromString(html, "text/html")
       .getElementsByClassName("question-summary")[0];
-    var qLink = "//" + siteNameToHostName(site) 
+    var qLink = "http://" + siteNameToHostName(site) 
               + question.querySelector("a.question-hyperlink").getAttribute("href");
     onQuestionActive({
       body: $(".excerpt", question).html().trim(),
@@ -205,6 +205,7 @@
     .then(function(response){      
       response.items.forEach(function(question){
         question.site = queue.site;
+        question.title = htmlUnescape(question.title);
         checkQuestion(question);
         if(question.answers) question.answers.forEach(function(answer){
           checkAnswer(question, answer);
@@ -226,7 +227,7 @@
     var link = answer ? answer.link : question.link;  
     if(!notifiedOf[site]) notifiedOf[site] = {};
     if(!notifiedOf[site][id]){
-      if(/\b(ass(hole)?|bitch|crap|damn|fag|fuck|idiot|motherfucker|nigga|shit(hole)?|whore)e?s?\b/.test(text) ||
+      if(/\b(ass(hole)?|bitch|crap|damn|dumb(ass)?|fag|fuck|idiot|motherfucker|nigga|shit(hole)?|stupid|whore)e?s?\b/.test(text) ||
          is.mostlyUppercase(text) ||
          /\w+@(\w+\.)+\w{2,}/.test(text.replace(/\s/,'')) ||
          !answer && (
