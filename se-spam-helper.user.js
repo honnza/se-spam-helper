@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.1.3
+// @version       3.1.5
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest, GM_openInTab, GM_setClipboard */
@@ -214,8 +214,7 @@
     });
   }
   
-  function checkPost(question, answer){
-    var title = question.title;
+  function checkPost(question, answer){var title = question.title;
     var host = question.site;
     var site = hostNameToSiteName(host);
     var site_class = "realtime-" + siteToClass(site);
@@ -234,7 +233,7 @@
            site == "meta" || site == "drupal" ||
            /(?:[^a-hj-np-z ] *){9,}/i.test(title) ||
            is.mostlyUppercase(title) ||
-           /\b(vs?|l[ae]|live|watch|free|cheap|online|best|nike|buy|replica|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl|fifa|escort)\b/i.test(title)
+           /\b(vs?|l[ae]|live|watch|free|cheap|online|best|nike|buy|replica|here is|porn|packers|movers|slim|concord|black magic|vashikaran|baba(ji)?|\d+s|kgl|fifa|escort|swtor)\b/i.test(title)
         )
       ){
         css.textContent += "." + classname + " {background-color: #FCC}\n";
@@ -242,7 +241,6 @@
                answer ? "A - " + a_body.text() :
                question.body ? "Q - " + q_body.text() :
                undefined, 
-               link);
       }
       notifiedOf[site][id] = true;
       if(!notifiedOfToday[site]) notifiedOfToday[site] = {};
@@ -276,7 +274,7 @@
   }
   
   function notify(site, title, body, url){
-    if(!ooflagSites[site]){
+    if(notification_granted && !ooflagSites[site]){
       var notification = new Notification(title, {
         icon: classToImageUrl(siteToClass(site)),
         body: body || ''
