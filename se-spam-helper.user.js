@@ -3,7 +3,7 @@
 // @description   filter for the stack exchange real time question viewer,
 // @description   aiding in identification and removal of network-wide obvious spam
 // @include       http://stackexchange.com/questions?tab=realtime
-// @version       3.1.5
+// @version       3.1.6
 // ==/UserScript==
 
 /* global unsafeWindow, GM_xmlhttpRequest, GM_openInTab, GM_setClipboard */
@@ -241,6 +241,7 @@
                answer ? "A - " + a_body.text() :
                question.body ? "Q - " + q_body.text() :
                undefined, 
+               link);
       }
       notifiedOf[site][id] = true;
       if(!notifiedOfToday[site]) notifiedOfToday[site] = {};
@@ -307,7 +308,7 @@
     var wrapper = document.getElementsByClassName('topbar-wrapper')[0]; 
     var links = document.getElementsByClassName('topbar-links')[0];
     wrapper.insertBefore(menu, links);
-	
+  
     css.textContent +=
       "#spam-helper-menu      {display: inline-block; padding-top:7px}" +
       "#spam-helper-menu > span {display: block; width: 150px; color: white}" +
@@ -339,7 +340,7 @@
     var span = document.createElement("span");
     span.appendChild(cb);
     span.appendChild(label);
-	
+  
     menu.appendChild(span);
   }
 
