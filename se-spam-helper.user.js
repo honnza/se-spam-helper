@@ -49,12 +49,14 @@ function onWsMessage(e){
 }   
 
 function onQuestionActive(e){
-  Promise.promisify(http.get)(e.link).then(readFully).then(function(response){
-    var questionPage = new DOMParser().parseFromString(response, "text/html");
-    var title = questionPage.querySelector("#question-header h2").textContent;
-    var answerCount = questionPage.querySelector("#answers-header h2").textContent;
-    console.log("%o has %o", title, answerCount)
-  })
+  http.get(e.link,function(stream){
+    readFully(stream).then(function(response){
+      var questionPage = new DOMParser().parseFromString(response, "text/html");
+      var title = questionPage.querySelector("#question-header h1").textContent;
+      var answerCount = questionPage.querySelector("#answers-header h2").textContent.replace(/\s+/g," ");
+      console.log("%o has %o", title, answerCount);
+    });
+  });
 }
 
 function parseRealtimeSocket(wsData){
@@ -69,6 +71,7 @@ function parseRealtimeSocket(wsData){
 }
 
 function readFully(stream){
+  stream.setEncoding("utf-8");
   return new Promise.Promise(function(resolve, reject){
     var chunks = [];
     stream.on("readable", function(){
