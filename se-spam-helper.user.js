@@ -1,3 +1,4 @@
+var Promise = require("bluebird");
 var http = require("http");
 
 var QUEUE_TIMEOUT = 12 * 60 * 60 * 1000;
@@ -29,6 +30,10 @@ var ws, wsRefreshTimeout;
 
 var siteWebsocketIDs = {}; 
 
+function htmlUnescape(html){
+  return new DOMParser().parseFromString(html, "text/html")
+                        .body.textContent.trim();
+}
 function onWsMessage(e){
   var response = JSON.parse(e.data);
   var data = response.data && JSON.parse(response.data);
@@ -44,7 +49,12 @@ function onWsMessage(e){
 }   
 
 function onQuestionActive(e){
-  http.get(e.link, console.log.bind(console))
+  Promise.promisify(http.get)(e.link).then(readFully).then(function(response){
+    var questionPage = new DOMParser().parseFromString(response, "text/html");
+    var title = questionPage.querySelector("#question-header h2").textContent;
+    var answerCount = questionPage.querySelector("#answers-header h2").textContent;
+    console.log("%o has %o", title, answerCount)
+  })
 }
 
 function parseRealtimeSocket(wsData){
@@ -58,7 +68,13 @@ function parseRealtimeSocket(wsData){
   };
 }
 
-function htmlUnescape(html){
-  return new DOMParser().parseFromString(html, "text/html")
-                        .body.textContent.trim();
+function readFully(stream){
+  return new Promise.Promise(function(resolve, reject){
+    var chunks = [];
+    stream.on("readable", function(){
+      chunks.push(stream.read());
+    }).on("end",function(){
+      resolve(chunks.join());
+    })
+  })
 }
